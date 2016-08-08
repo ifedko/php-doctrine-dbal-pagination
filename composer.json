@@ -1,5 +1,5 @@
 {
-    "name": "php/doctrine-dbal-pagination",
+    "name": "ifedko/php-doctrine-dbal-pagination",
     "description": "Php pagination builder using doctrine dbal",
     "type": "library",
     "license": "MIT",
