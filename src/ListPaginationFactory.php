@@ -24,6 +24,6 @@ class ListPaginationFactory
         $listBuilder = new $listBuilderFullClassName($dbConnection);
         $listBuilder->configure($listParameters);
 
-        return new ListPagination($dbConnection, $listBuilder);
+        return new ListPagination($listBuilder);
     }
 }
