@@ -12,22 +12,15 @@ class ListPagination
     const DEFAULT_OFFSET = 0;
 
     /**
-     * @var Connection
-     */
-    private $dbConnection;
-
-    /**
      * @var \Ifedko\DoctrineDbalPagination\ListBuilder
      */
     private $listQueryBuilder;
 
     /**
-     * @param Connection $dbConnection
      * @param \Ifedko\DoctrineDbalPagination\ListBuilder $listQueryBuilder
      */
-    public function __construct(Connection $dbConnection, ListBuilder $listQueryBuilder)
+    public function __construct(ListBuilder $listQueryBuilder)
     {
-        $this->dbConnection = $dbConnection;
         $this->listQueryBuilder = $listQueryBuilder;
     }
 
@@ -41,7 +34,7 @@ class ListPagination
         $limit = (intval($limit) > 0) ? intval($limit) : self::DEFAULT_LIMIT;
         $offset = (intval($offset) >= 0) ? $offset : self::DEFAULT_OFFSET;
 
-        $dbAdapter = new DbAdapter($this->dbConnection);
+        $dbAdapter = new DbAdapter();
 
         $totalQueryBuilder = $this->listQueryBuilder->totalQuery();
         $queryBuilder = $this->listQueryBuilder->query();

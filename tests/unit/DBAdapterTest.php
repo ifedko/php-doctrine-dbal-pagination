@@ -11,7 +11,6 @@ class DbAdapterTest extends \PHPUnit_Framework_TestCase
     {
         $limit = 10;
         $offset = 0;
-        $dbConnectionMock = self::createDbConnectionMock();
         $dbStatement = self::createDbStatementMock();
         $dbStatement->shouldReceive('fetchAll')->andReturn([
             ['id' => 1, 'name' => 'name1'],
@@ -22,7 +21,7 @@ class DbAdapterTest extends \PHPUnit_Framework_TestCase
         $queryBuilderMock->shouldReceive('setFirstResult')->andReturn($queryBuilderMock);
         $queryBuilderMock->shouldReceive('execute')->andReturn($dbStatement);
 
-        $dbAdapter = new DbAdapter($dbConnectionMock);
+        $dbAdapter = new DbAdapter();
         $items = $dbAdapter->matching($queryBuilderMock, $limit, $offset);
 
         $this->assertTrue(is_array($items));
@@ -30,7 +29,6 @@ class DbAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testMatchingTotalReturnIntSuccess()
     {
-        $dbConnectionMock = self::createDbConnectionMock();
         $dbStatement = self::createDbStatementMock();
         $dbStatement->shouldReceive('rowCount')->andReturn(2);
         $queryBuilderMock = self::createQueryBuilderMock();
@@ -38,15 +36,10 @@ class DbAdapterTest extends \PHPUnit_Framework_TestCase
         $queryBuilderMock->shouldReceive('setFirstResult')->andReturn($queryBuilderMock);
         $queryBuilderMock->shouldReceive('execute')->andReturn($dbStatement);
 
-        $dbAdapter = new DbAdapter($dbConnectionMock);
+        $dbAdapter = new DbAdapter();
         $total = $dbAdapter->matchingTotal($queryBuilderMock);
 
         $this->assertTrue(is_int($total));
-    }
-
-    private static function createDbConnectionMock()
-    {
-        return Mockery::mock('\Doctrine\DBAL\Connection');
     }
 
     private static function createDbStatementMock()

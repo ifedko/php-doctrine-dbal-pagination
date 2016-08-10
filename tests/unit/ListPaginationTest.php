@@ -16,10 +16,9 @@ class ListPaginationTest extends \PHPUnit_Framework_TestCase
             ['id' => 1, 'name' => 'name1'],
             ['id' => 2, 'name' => 'name2']
         ];
-        $dbConnectionMock = self::createDbConnectionMock();
         $listBuilder = self::createListBuilderMock($expectedTotal, $expectedItems);
 
-        $listPagination = new ListPagination($dbConnectionMock, $listBuilder);
+        $listPagination = new ListPagination($listBuilder);
         $listPage = $listPagination->get($limit, $offset);
 
         $this->assertEquals($expectedTotal, $listPage['total']);
@@ -35,19 +34,13 @@ class ListPaginationTest extends \PHPUnit_Framework_TestCase
             ['id' => 1, 'name' => 'name1'],
             ['id' => 2, 'name' => 'name2']
         ];
-        $dbConnectionMock = self::createDbConnectionMock();
         $listBuilder = self::createListBuilderMock($expectedTotal, $expectedItems);
 
-        $listPagination = new ListPagination($dbConnectionMock, $listBuilder);
+        $listPagination = new ListPagination($listBuilder);
         $listPage = $listPagination->get($limit, $offset);
 
         $this->assertEquals($expectedTotal, $listPage['total']);
         $this->assertEquals($expectedItems, $listPage['items']);
-    }
-
-    private static function createDbConnectionMock()
-    {
-        return Mockery::mock('\Doctrine\DBAL\Connection');
     }
 
     private static function createListBuilderMock($expectedTotal, $expectedItems)
