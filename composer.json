@@ -7,6 +7,10 @@
         {
             "name": "ifedko",
             "email": "fedko.ilya@gmail.com"
+        },
+        {
+            "name": "Maxim Gnatenko",
+            "email": "mgnatenko@gmail.com"
         }
     ],
     "autoload": {
