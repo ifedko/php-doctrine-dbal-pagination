@@ -118,7 +118,11 @@ abstract class ListBuilder
     {
         if (is_array($this->sortings)) {
             foreach ($this->sortings as $field => $direction) {
-                $queryBuilder->addOrderBy($field, $direction);
+                if ($direction instanceof SortingInterface) {
+                    $direction->apply($queryBuilder);
+                } else {
+                    $queryBuilder->addOrderBy($field, $direction);
+                }
             }
         }
 
