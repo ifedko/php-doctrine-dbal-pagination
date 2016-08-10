@@ -34,14 +34,12 @@ class ListPagination
         $limit = (intval($limit) > 0) ? intval($limit) : self::DEFAULT_LIMIT;
         $offset = (intval($offset) >= 0) ? $offset : self::DEFAULT_OFFSET;
 
-        $dbAdapter = new DbAdapter();
-
-        $totalQueryBuilder = $this->listQueryBuilder->totalQuery();
-        $queryBuilder = $this->listQueryBuilder->query();
-
         return [
-            'total' => $dbAdapter->matchingTotal($totalQueryBuilder),
-            'items' => $dbAdapter->matching($queryBuilder, $limit, $offset),
+            'total' => $this->listQueryBuilder->totalQuery()
+                ->execute()->rowCount(),
+
+            'items' => $this->listQueryBuilder->query()
+                ->setMaxResults($limit)->setFirstResult($offset)->execute()->fetchAll()
         ];
     }
 }
