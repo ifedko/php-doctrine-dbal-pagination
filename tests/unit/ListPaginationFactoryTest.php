@@ -2,6 +2,7 @@
 
 namespace Ifedko\DoctrineDbalPagination\Test;
 
+use Ifedko\DoctrineDbalPagination\SortingInterface;
 use Mockery;
 use Ifedko\DoctrineDbalPagination\ListPaginationFactory;
 
@@ -13,6 +14,8 @@ use Ifedko\DoctrineDbalPagination\Filter\Base\EqualFilter;
 
 class TestListBuilder extends ListBuilder
 {
+    public $testSortingModel;
+
     /**
      * {@inheritDoc}
      */
@@ -22,6 +25,10 @@ class TestListBuilder extends ListBuilder
         $direction = (!empty($parameters['sortOrder'])) ? $parameters['sortOrder'] : 'asc';
         if (isset($parameters['sortBy']) && strlen($parameters['sortBy']) > 0) {
             $sorting[$parameters['sortBy']] = $direction;
+        }
+
+        if ($this->testSortingModel) {
+            $sorting[] = $this->testSortingModel;
         }
 
         $this->sortings = $sorting;
@@ -97,6 +104,18 @@ class ListPaginationFactoryTest extends \PHPUnit_Framework_TestCase
         self::expectException('Ifedko\\DoctrineDbalPagination\\Exception\\ListPaginationFactoryException');
         self::expectExceptionMessage($expectedExceptionMessage);
         ListPaginationFactory::create($dbConnectionMock, $listBuilderClassName);
+    }
+
+    public function testSupportsComplexSorting()
+    {
+        $sortingModel = Mockery::mock(SortingInterface::class);
+        $sortingModel->shouldReceive('apply')->once();
+
+        $builder = new TestListBuilder(self::createDbConnectionMock());
+        $builder->testSortingModel = $sortingModel;
+
+        $builder->configure([]);
+        $builder->query();
     }
 
     private static function createDbConnectionMock()
