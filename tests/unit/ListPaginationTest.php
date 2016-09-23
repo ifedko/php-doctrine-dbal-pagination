@@ -43,6 +43,28 @@ class ListPaginationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedItems, $listPage['items']);
     }
 
+    public function testItIsPossibleToDefineAMapFunctionToApplyToItemsOfAPage()
+    {
+        $listBuilder = self::createListBuilderMock(
+            1,
+            [
+                ['id' => 1, 'object' => '{"some":"json"}']
+            ]
+        );
+
+        $pager = new ListPagination($listBuilder);
+        $pager->definePageItemsMapCallback(function ($row) {
+            return array_merge($row, ['object' => json_decode($row['object'], true)]);
+        });
+
+        $this->assertEquals(
+            [
+                ['id' => 1, 'object' => ['some' => 'json']]
+            ],
+            $pager->get(10, 0)['items']
+        );
+    }
+
     private static function createListBuilderMock($expectedTotal, $expectedItems)
     {
         $statementMock = Mockery::mock('\Doctrine\DBAL\Statement', [
