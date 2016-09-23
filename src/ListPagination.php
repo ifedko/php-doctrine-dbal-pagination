@@ -17,6 +17,11 @@ class ListPagination
     private $listQueryBuilder;
 
     /**
+     * @var callable|null
+     */
+    private $pageItemsMapCallback;
+
+    /**
      * @param \Ifedko\DoctrineDbalPagination\ListBuilder $listQueryBuilder
      */
     public function __construct(ListBuilder $listQueryBuilder)
@@ -34,12 +39,20 @@ class ListPagination
         $limit = (intval($limit) > 0) ? intval($limit) : self::DEFAULT_LIMIT;
         $offset = (intval($offset) >= 0) ? $offset : self::DEFAULT_OFFSET;
 
+        $pageItems = $this->listQueryBuilder->query()
+            ->setMaxResults($limit)->setFirstResult($offset)->execute()->fetchAll();
+
         return [
             'total' => $this->listQueryBuilder->totalQuery()
                 ->execute()->rowCount(),
 
-            'items' => $this->listQueryBuilder->query()
-                ->setMaxResults($limit)->setFirstResult($offset)->execute()->fetchAll()
+            'items' => is_null($this->pageItemsMapCallback) ?
+                $pageItems : array_map($this->pageItemsMapCallback, $pageItems)
         ];
+    }
+
+    public function definePageItemsMapCallback($callback)
+    {
+        $this->pageItemsMapCallback = $callback;
     }
 }
