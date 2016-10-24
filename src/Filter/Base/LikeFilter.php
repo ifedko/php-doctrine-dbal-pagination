@@ -13,7 +13,7 @@ class LikeFilter implements FilterInterface
     private $columns;
 
     /**
-     * @var int
+     * @var string
      */
     private $value;
 
