@@ -44,4 +44,23 @@ class LikeFilterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Doctrine\DBAL\Query\QueryBuilder', $queryBuilder);
     }
+
+    public function testAcceptsOperatorOption()
+    {
+        $queryBuilder = new QueryBuilder(DriverManager::getConnection([
+            'driver' => 'pdo_sqlite',
+            'path' => ':memory:'
+        ]));
+
+        $likeFilter = new LikeFilter('field', ['operator' => 'ILIKE']);
+        $likeFilter->bindValues('something like');
+        $queryBuilder = $likeFilter->apply($queryBuilder);
+        $this->assertContains(
+            "field ILIKE '%something like%'",
+            $queryBuilder->getSQL()
+        );
+
+        $this->assertInstanceOf('Doctrine\DBAL\Query\QueryBuilder', $queryBuilder);
+    }
+
 }

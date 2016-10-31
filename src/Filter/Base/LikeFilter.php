@@ -13,16 +13,23 @@ class LikeFilter implements FilterInterface
     private $columns;
 
     /**
+     * @var array
+     */
+    private $options;
+
+    /**
      * @var string
      */
     private $value;
 
     /**
      * @param string|array $columns
+     * @param array $options
      */
-    public function __construct($columns)
+    public function __construct($columns, $options=[])
     {
         $this->columns = (!is_array($columns)) ? [$columns] : $columns;
+        $this->options = array_merge(['operator' => 'LIKE'], $options);
     }
 
     /**
@@ -41,8 +48,9 @@ class LikeFilter implements FilterInterface
     {
         $orConditions = [];
         foreach ($this->columns as $column) {
-            $orCondition = $builder->expr()->like(
+            $orCondition = $builder->expr()->comparison(
                 $column,
+                $this->options['operator'],
                 $builder->expr()->literal('%' . $this->value . '%', \PDO::PARAM_STR)
             );
             $orConditions[] = $orCondition;
