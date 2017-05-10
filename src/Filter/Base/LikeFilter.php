@@ -48,9 +48,8 @@ class LikeFilter implements FilterInterface
     {
         $orConditions = [];
         foreach ($this->columns as $column) {
-            $orCondition = $builder->expr()->comparison(
+            $orCondition = $builder->expr()->like(
                 $column,
-                $this->options['operator'],
                 $builder->expr()->literal('%' . $this->value . '%', \PDO::PARAM_STR)
             );
             $orConditions[] = $orCondition;
