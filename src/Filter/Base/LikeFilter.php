@@ -24,12 +24,10 @@ class LikeFilter implements FilterInterface
 
     /**
      * @param string|array $columns
-     * @param array $options
      */
-    public function __construct($columns, $options=[])
+    public function __construct($columns)
     {
         $this->columns = (!is_array($columns)) ? [$columns] : $columns;
-        $this->options = array_merge(['operator' => 'LIKE'], $options);
     }
 
     /**
