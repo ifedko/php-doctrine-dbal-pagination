@@ -3,7 +3,6 @@
 namespace Ifedko\DoctrineDbalPagination\Test;
 
 use Mockery;
-use Ifedko\DoctrineDbalPagination\ListBuilder;
 
 class ListBuilderTest extends \PHPUnit_Framework_TestCase
 {

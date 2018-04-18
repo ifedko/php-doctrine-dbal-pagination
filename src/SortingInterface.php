@@ -8,7 +8,6 @@ interface SortingInterface
 {
     /**
      * @param mixed $values
-     * @return void
      */
     public function bindValues($values);
 

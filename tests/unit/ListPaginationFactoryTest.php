@@ -2,6 +2,7 @@
 
 namespace Ifedko\DoctrineDbalPagination\Test;
 
+use Ifedko\DoctrineDbalPagination\Sorting\ByColumn;
 use Ifedko\DoctrineDbalPagination\SortingInterface;
 use Mockery;
 use Ifedko\DoctrineDbalPagination\ListPaginationFactory;
@@ -21,17 +22,14 @@ class TestListBuilder extends ListBuilder
      */
     protected function configureSorting($parameters)
     {
-        $sorting = [];
-        $direction = (!empty($parameters['sortOrder'])) ? $parameters['sortOrder'] : 'asc';
-        if (isset($parameters['sortBy']) && strlen($parameters['sortBy']) > 0) {
-            $sorting[$parameters['sortBy']] = $direction;
-        }
-
         if ($this->testSortingModel) {
-            $sorting[] = $this->testSortingModel;
+            $this->sortUsing($this->testSortingModel, $parameters);
         }
 
-        $this->sortings = $sorting;
+        $this->sortUsing(new ByColumn('id', 'user_id'), $parameters);
+        $this->sortUsing(new ByColumn('name', 'name'), $parameters);
+        $this->sortUsing(new ByColumn('from', 'user.created_at'), $parameters);
+        $this->sortUsing(new ByColumn('to', 'user.created_at'), $parameters);
 
         return $this;
     }
@@ -106,9 +104,26 @@ class ListPaginationFactoryTest extends \PHPUnit_Framework_TestCase
         ListPaginationFactory::create($dbConnectionMock, $listBuilderClassName);
     }
 
+    public function testSupportsSorting()
+    {
+        $sortingModel = Mockery::mock(SortingInterface::class);
+        $sortingModel->shouldReceive('bindValues');
+        $sortingModel->shouldReceive('apply')->once();
+
+        $builder = new TestListBuilder(self::createDbConnectionMock());
+        $builder->testSortingModel = $sortingModel;
+
+        $builder->configure([
+            'sortBy' => 'from'
+        ]);
+
+        $this->assertContains('ORDER BY user.created_at ASC', $builder->query()->getSQL());
+    }
+
     public function testSupportsComplexSorting()
     {
         $sortingModel = Mockery::mock(SortingInterface::class);
+        $sortingModel->shouldReceive('bindValues');
         $sortingModel->shouldReceive('apply')->once();
 
         $builder = new TestListBuilder(self::createDbConnectionMock());
