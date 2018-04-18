@@ -107,7 +107,7 @@ class ListPaginationFactoryTest extends \PHPUnit_Framework_TestCase
     public function testSupportsSorting()
     {
         $sortingModel = Mockery::mock(SortingInterface::class);
-        $sortingModel->shouldReceive('bindValues')->andReturnSelf();
+        $sortingModel->shouldReceive('bindValues');
         $sortingModel->shouldReceive('apply')->once();
 
         $builder = new TestListBuilder(self::createDbConnectionMock());
@@ -123,7 +123,7 @@ class ListPaginationFactoryTest extends \PHPUnit_Framework_TestCase
     public function testSupportsComplexSorting()
     {
         $sortingModel = Mockery::mock(SortingInterface::class);
-        $sortingModel->shouldReceive('bindValues')->andReturnSelf();
+        $sortingModel->shouldReceive('bindValues');
         $sortingModel->shouldReceive('apply')->once();
 
         $builder = new TestListBuilder(self::createDbConnectionMock());
