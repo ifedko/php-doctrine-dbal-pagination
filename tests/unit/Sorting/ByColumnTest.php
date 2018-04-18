@@ -90,6 +90,23 @@ class ByColumnTest extends \PHPUnit_Framework_TestCase
         )->apply($builder);
     }
 
+    public function testReturnsSortingParametersThatActuallyWereApplied()
+    {
+        $sorting = new ByColumn('name', 't.name');
+
+        $this->assertSame(
+            [
+                'sortBy' => 'name',
+                'sortOrder' => 'DESC'
+            ],
+            $sorting->bindValues([
+                'foo' => 'bar',
+                'sortBy' => 'name',
+                'sortOrder' => 'desc'
+            ])
+        );
+    }
+
     private static function sortingByNameWithParameters($parameters, $defaultDirection = null)
     {
         $sorting = new ByColumn('name', 't.name', $defaultDirection);

@@ -7,7 +7,8 @@ use Doctrine\DBAL\Query\QueryBuilder;
 interface SortingInterface
 {
     /**
-     * @param mixed $values
+     * @param array $values
+     * @return array values that were actually used to define sorting
      */
     public function bindValues($values);
 

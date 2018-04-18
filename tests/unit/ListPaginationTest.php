@@ -80,6 +80,7 @@ class ListPaginationTest extends \PHPUnit_Framework_TestCase
         $listBuilderMock = Mockery::mock('\Ifedko\DoctrineDbalPagination\ListBuilder');
         $listBuilderMock->shouldReceive('totalQuery')->andReturn($queryBuilderMock);
         $listBuilderMock->shouldReceive('query')->andReturn($queryBuilderMock);
+        $listBuilderMock->shouldReceive('sortingParameters')->andReturn([]);
 
         return $listBuilderMock;
     }
