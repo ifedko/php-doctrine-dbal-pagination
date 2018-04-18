@@ -38,7 +38,10 @@ abstract class ListBuilder
      */
     public function configure($parameters)
     {
+        $this->filters = [];
         $this->configureFilters($parameters);
+
+        $this->sortings = [];
         $this->configureSorting($parameters);
     }
 
@@ -95,16 +98,24 @@ abstract class ListBuilder
     }
 
     /**
+     * @param $sorting SortingInterface
+     * @param array $parameters
+     */
+    protected function sortUsing(SortingInterface $sorting, array $parameters)
+    {
+        $sorting->bindValues($parameters);
+        $this->sortings[] = $sorting;
+    }
+
+    /**
      * @param QueryBuilder $queryBuilder
      * @return QueryBuilder
      */
     private function applyFilters(QueryBuilder $queryBuilder)
     {
-        if (!empty($this->filters)) {
-            /* @var $filter FilterInterface */
-            foreach ($this->filters as $filter) {
-                $queryBuilder = $filter->apply($queryBuilder);
-            }
+        /* @var $filter FilterInterface */
+        foreach ($this->filters as $filter) {
+            $queryBuilder = $filter->apply($queryBuilder);
         }
 
         return $queryBuilder;
@@ -116,14 +127,8 @@ abstract class ListBuilder
      */
     private function applySortings(QueryBuilder $queryBuilder)
     {
-        if (is_array($this->sortings)) {
-            foreach ($this->sortings as $field => $direction) {
-                if ($direction instanceof SortingInterface) {
-                    $direction->apply($queryBuilder);
-                } else {
-                    $queryBuilder->addOrderBy($field, $direction);
-                }
-            }
+        foreach ($this->sortings as $sorting) {
+            $sorting->apply($queryBuilder);
         }
 
         return $queryBuilder;

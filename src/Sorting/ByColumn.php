@@ -30,8 +30,7 @@ class ByColumn implements SortingInterface
     }
 
     /**
-     * @param mixed $values
-     * @return void
+     * @param array $values
      */
     public function bindValues($values)
     {
@@ -48,7 +47,6 @@ class ByColumn implements SortingInterface
             $this->sortColumn = $this->columnName;
             $this->sortDirection = $this->defaultDirection;
         }
-
     }
 
     /**
