@@ -28,8 +28,7 @@ class TestListBuilder extends ListBuilder
 
         $this->sortUsing(new ByColumn('id', 'user_id'), $parameters);
         $this->sortUsing(new ByColumn('name', 'name'), $parameters);
-        $this->sortUsing(new ByColumn('from', 'user.created_at'), $parameters);
-        $this->sortUsing(new ByColumn('to', 'user.created_at'), $parameters);
+        $this->sortUsing(new ByColumn('created', 'user.created_at', 'DESC'), $parameters);
 
         return $this;
     }
@@ -109,10 +108,19 @@ class ListPaginationFactoryTest extends \PHPUnit_Framework_TestCase
         $builder = new TestListBuilder(self::createDbConnectionMock());
 
         $builder->configure([
-            'sortBy' => 'from'
+            'sortBy' => 'name'
         ]);
 
-        $this->assertContains('ORDER BY user.created_at ASC', $builder->query()->getSQL());
+        $this->assertContains('ORDER BY name ASC', $builder->query()->getSQL());
+    }
+
+    public function testHasDefaultSorting()
+    {
+        $builder = new TestListBuilder(self::createDbConnectionMock());
+
+        $builder->configure([]);
+
+        $this->assertContains('ORDER BY user.created_at DESC', $builder->query()->getSQL());
     }
 
     public function testSupportsComplexSorting()
@@ -133,14 +141,14 @@ class ListPaginationFactoryTest extends \PHPUnit_Framework_TestCase
         $builder = new TestListBuilder(self::createDbConnectionMock());
 
         $builder->configure([
-            'sortBy' => 'from',
+            'sortBy' => 'name',
             'foo' => 'bar',
             'sortOrder' => 'asc'
         ]);
 
         $this->assertEquals(
             [
-                'sortBy' => 'from',
+                'sortBy' => 'name',
                 'sortOrder' => 'ASC'
             ],
             $builder->sortingParameters()

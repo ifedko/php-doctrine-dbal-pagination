@@ -117,8 +117,8 @@ abstract class ListBuilder
     protected function sortUsing(SortingInterface $sorting, array $parameters)
     {
         $this->sortingParameters = array_merge(
-            $this->sortingParameters,
-            $sorting->bindValues($parameters)
+            $sorting->bindValues($parameters),
+            $this->sortingParameters
         );
         $this->sortings[] = $sorting;
     }
