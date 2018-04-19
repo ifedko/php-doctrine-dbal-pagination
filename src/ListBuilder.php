@@ -24,6 +24,11 @@ abstract class ListBuilder
     protected $sortings;
 
     /**
+     * @var array
+     */
+    protected $sortingParameters = [];
+
+    /**
      * @param Connection $dbConnection
      */
     public function __construct(Connection $dbConnection)
@@ -67,6 +72,14 @@ abstract class ListBuilder
     }
 
     /**
+     * @return array of sorting parameter that were applied to the list
+     */
+    public function sortingParameters()
+    {
+        return $this->sortingParameters;
+    }
+
+    /**
      * @return QueryBuilder
      */
     abstract protected function baseQuery();
@@ -103,7 +116,10 @@ abstract class ListBuilder
      */
     protected function sortUsing(SortingInterface $sorting, array $parameters)
     {
-        $sorting->bindValues($parameters);
+        $this->sortingParameters = array_merge(
+            $this->sortingParameters,
+            $sorting->bindValues($parameters)
+        );
         $this->sortings[] = $sorting;
     }
 

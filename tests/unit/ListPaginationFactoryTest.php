@@ -106,12 +106,7 @@ class ListPaginationFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testSupportsSorting()
     {
-        $sortingModel = Mockery::mock(SortingInterface::class);
-        $sortingModel->shouldReceive('bindValues');
-        $sortingModel->shouldReceive('apply')->once();
-
         $builder = new TestListBuilder(self::createDbConnectionMock());
-        $builder->testSortingModel = $sortingModel;
 
         $builder->configure([
             'sortBy' => 'from'
@@ -123,7 +118,7 @@ class ListPaginationFactoryTest extends \PHPUnit_Framework_TestCase
     public function testSupportsComplexSorting()
     {
         $sortingModel = Mockery::mock(SortingInterface::class);
-        $sortingModel->shouldReceive('bindValues');
+        $sortingModel->shouldReceive('bindValues')->andReturn([]);
         $sortingModel->shouldReceive('apply')->once();
 
         $builder = new TestListBuilder(self::createDbConnectionMock());
@@ -131,6 +126,25 @@ class ListPaginationFactoryTest extends \PHPUnit_Framework_TestCase
 
         $builder->configure([]);
         $builder->query();
+    }
+
+    public function testProvidesSortingParams()
+    {
+        $builder = new TestListBuilder(self::createDbConnectionMock());
+
+        $builder->configure([
+            'sortBy' => 'from',
+            'foo' => 'bar',
+            'sortOrder' => 'asc'
+        ]);
+
+        $this->assertEquals(
+            [
+                'sortBy' => 'from',
+                'sortOrder' => 'ASC'
+            ],
+            $builder->sortingParameters()
+        );
     }
 
     private static function createDbConnectionMock()

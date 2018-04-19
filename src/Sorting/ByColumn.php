@@ -31,9 +31,11 @@ class ByColumn implements SortingInterface
 
     /**
      * @param array $values
+     * @return array values that were actually used to define sorting
      */
     public function bindValues($values)
     {
+        $appliedValues = [];
         $this->sortColumn = null;
 
         if (isset($values[self::PARAM_NAME_SORT_BY]) && ($values[self::PARAM_NAME_SORT_BY] === $this->columnAlias)) {
@@ -47,6 +49,16 @@ class ByColumn implements SortingInterface
             $this->sortColumn = $this->columnName;
             $this->sortDirection = $this->defaultDirection;
         }
+
+        if ($this->sortColumn) {
+            $appliedValues[self::PARAM_NAME_SORT_BY] = $this->columnAlias;
+        }
+
+        if ($this->sortColumn && $this->sortDirection) {
+            $appliedValues[self::PARAM_NAME_SORT_ORDER] = $this->sortDirection;
+        }
+
+        return $appliedValues;
     }
 
     /**

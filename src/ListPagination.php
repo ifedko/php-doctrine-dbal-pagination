@@ -47,7 +47,9 @@ class ListPagination
                 ->execute()->rowCount(),
 
             'items' => is_null($this->pageItemsMapCallback) ?
-                $pageItems : array_map($this->pageItemsMapCallback, $pageItems)
+                $pageItems : array_map($this->pageItemsMapCallback, $pageItems),
+
+            'sorting' => $this->listQueryBuilder->sortingParameters()
         ];
     }
 
