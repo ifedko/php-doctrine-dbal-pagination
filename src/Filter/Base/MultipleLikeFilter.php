@@ -61,32 +61,31 @@ class MultipleLikeFilter implements FilterInterface
      */
     public function apply(QueryBuilder $builder)
     {
-        $orConditions = [];
-
-        foreach ($this->columns as $column) {
-            $andConditions = [];
-            foreach ($this->includeValues as $value) {
-                $andCondition = $builder->expr()->comparison(
+        $andConditions = [];
+        foreach ($this->includeValues as $value) {
+            $orConditions = [];
+            foreach ($this->columns as $column) {
+                $orConditions[] = $builder->expr()->comparison(
                     $column,
                     $this->options['operator'],
                     $builder->expr()->literal('%' . $value . '%', \PDO::PARAM_STR)
                 );
-                $andConditions[] = $andCondition;
             }
+            $andConditions[] = $builder->expr()->orX()->addMultiple($orConditions);
+        }
 
-            foreach ($this->excludeValues as $value) {
+        foreach ($this->excludeValues as $value) {
+            foreach ($this->columns as $column) {
                 $andCondition = $builder->expr()->comparison(
-                    $column,
+                    'COALESCE(' . $column . ", '')",
                     'NOT ' . $this->options['operator'],
                     $builder->expr()->literal('%' . $value . '%', \PDO::PARAM_STR)
                 );
                 $andConditions[] = $andCondition;
             }
-
-            $orConditions[] = $builder->expr()->andX()->addMultiple($andConditions);
         }
 
-        $builder->andWhere($builder->expr()->orX()->addMultiple($orConditions));
+        $builder->andWhere($builder->expr()->andX()->addMultiple($andConditions));
 
         return $builder;
     }
