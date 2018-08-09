@@ -37,7 +37,7 @@ class MultipleLikeFilterTest extends \PHPUnit_Framework_TestCase
         $likeFilter->bindValues('something -like');
         $queryBuilder = $likeFilter->apply($queryBuilder);
         $this->assertContains(
-            "(field LIKE '%something%') AND (field NOT LIKE '%like%')",
+            "(field LIKE '%something%') AND (COALESCE(field, '') NOT LIKE '%like%')",
             $queryBuilder->getSQL()
         );
 
@@ -55,7 +55,7 @@ class MultipleLikeFilterTest extends \PHPUnit_Framework_TestCase
         $likeFilter->bindValues('w1 w2');
         $queryBuilder = $likeFilter->apply($queryBuilder);
         $this->assertContains(
-            "((field1 LIKE '%w1%') AND (field1 LIKE '%w2%')) OR ((field2 LIKE '%w1%') AND (field2 LIKE '%w2%'))",
+            "((field1 LIKE '%w1%') OR (field2 LIKE '%w1%')) AND ((field1 LIKE '%w2%') OR (field2 LIKE '%w2%'))",
             $queryBuilder->getSQL()
         );
 

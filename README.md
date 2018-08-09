@@ -157,3 +157,35 @@ $parameters = [
 * LikeFilter
 * MultipleEqualFilter
 * MultipleLikeFilter
+
+## MultipleLikeFilter
+
+This filter supports complex search queries, like substrings separated by a space. It narrows results
+when more search words is provided. Also negotiation is possible, like '-word'.
+
+example:
+
+search: `bla`
+results (3):
+
+c1 | c2
+--- | ---
+**bla** | first |
+**bla** | second |
+**bla** | final |
+
+
+search: `bla fi`
+results (2):
+
+c1 | c2
+--- | ---
+**bla** | **fi**rst
+**bla** | **fi**nal
+
+search: `bla fi -final`
+results (1):
+
+c1 | c2
+--- | ---
+**bla** | **fi**rst
