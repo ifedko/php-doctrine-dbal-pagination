@@ -168,17 +168,24 @@ example:
 search: `bla`
 results (3):
 
-bla | first
-bla | second
-bla | final
+c1 | c2
+--- | ---
+**bla** | first |
+**bla** | second |
+**bla** | final |
+
 
 search: `bla fi`
 results (2):
 
-bla | first
-bla | final
+c1 | c2
+--- | ---
+**bla** | **fi**rst
+**bla** | **fi**nal
 
 search: `bla fi -final`
 results (1):
 
-bla | first
+c1 | c2
+--- | ---
+**bla** | **fi**rst
