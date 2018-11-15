@@ -80,4 +80,30 @@ class MultipleLikeFilterTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Doctrine\DBAL\Query\QueryBuilder', $queryBuilder);
     }
 
+    public function testAcceptsMatchFromStartOption()
+    {
+        $queryBuilder = new QueryBuilder(DriverManager::getConnection([
+            'driver' => 'pdo_sqlite',
+            'path' => ':memory:'
+        ]));
+
+        $likeFilter = new MultipleLikeFilter(
+            ['name', 'email'],
+            ['operator' => 'ILIKE', 'matchFromStart' => ['name']]
+        );
+        $likeFilter->bindValues('something like');
+        $queryBuilder = $likeFilter->apply($queryBuilder);
+
+        $this->assertContains(
+            "(name ILIKE 'something%')",
+            $queryBuilder->getSQL()
+        );
+
+        $this->assertContains(
+            "(email ILIKE '%something%')",
+            $queryBuilder->getSQL()
+        );
+
+    }
+
 }

@@ -34,7 +34,7 @@ class MultipleLikeFilter implements FilterInterface
     public function __construct($columns, $options=[])
     {
         $this->columns = (!is_array($columns)) ? [$columns] : $columns;
-        $this->options = array_merge(['operator' => 'LIKE'], $options);
+        $this->options = array_merge(['operator' => 'LIKE', 'matchFromStart' => []], $options);
     }
 
     /**
@@ -68,7 +68,7 @@ class MultipleLikeFilter implements FilterInterface
                 $orConditions[] = $builder->expr()->comparison(
                     $column,
                     $this->options['operator'],
-                    $builder->expr()->literal('%' . $value . '%', \PDO::PARAM_STR)
+                    $builder->expr()->literal($this->leftWildcardOperator($column) . $value . '%', \PDO::PARAM_STR)
                 );
             }
             $andConditions[] = $builder->expr()->orX()->addMultiple($orConditions);
@@ -79,7 +79,7 @@ class MultipleLikeFilter implements FilterInterface
                 $andCondition = $builder->expr()->comparison(
                     'COALESCE(' . $column . ", '')",
                     'NOT ' . $this->options['operator'],
-                    $builder->expr()->literal('%' . $value . '%', \PDO::PARAM_STR)
+                    $builder->expr()->literal($this->leftWildcardOperator($column) . $value . '%', \PDO::PARAM_STR)
                 );
                 $andConditions[] = $andCondition;
             }
@@ -88,5 +88,12 @@ class MultipleLikeFilter implements FilterInterface
         $builder->andWhere($builder->expr()->andX()->addMultiple($andConditions));
 
         return $builder;
+    }
+
+    private function leftWildcardOperator($column)
+    {
+        return isset($this->options['matchFromStart'])
+            && is_array($this->options['matchFromStart'])
+            && in_array($column, $this->options['matchFromStart']) ? '' : '%';
     }
 }
