@@ -189,3 +189,10 @@ results (1):
 c1 | c2
 --- | ---
 **bla** | **fi**rst
+
+### Options
+
+It is possible to define the options:
+
+* operator - comparison operator, ILIKE, for example
+* matchFromStart - array of columns to do match from start of the string, `col like 'substring%'` for example
