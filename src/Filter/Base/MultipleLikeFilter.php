@@ -43,7 +43,9 @@ class MultipleLikeFilter implements FilterInterface
     public function bindValues($values)
     {
         $values = explode(' ', $values);
-        $values = array_filter($values);
+        $values = array_filter($values, static function($value){
+            return $value !== null && $value !== false && $value !== '';
+        });
 
         foreach ($values as $word) {
             if ($word[0] == '-') {

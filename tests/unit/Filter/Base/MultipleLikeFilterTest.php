@@ -68,6 +68,22 @@ class MultipleLikeFilterTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    public function testSupportsSearchByZeroSymbol()
+    {
+        $likeFilter = new MultipleLikeFilter(
+            ['name'],
+            ['operator' => 'ILIKE']
+        );
+        $likeFilter->bindValues('0');
+
+        $queryBuilder = $likeFilter->apply(self::queryBuilder());
+
+        self::assertContains(
+            "name ILIKE '%0%'",
+            $queryBuilder->getSQL()
+        );
+    }
+
     /**
      * @return QueryBuilder
      * @throws \Doctrine\DBAL\DBALException
