@@ -4,10 +4,10 @@ namespace Ifedko\DoctrineDbalPagination\Test\Filter\Base;
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Mockery as m;
 use Ifedko\DoctrineDbalPagination\Filter\Base\GreaterThanOrEqualFilter;
+use PHPUnit\Framework\TestCase;
 
-class GreaterThanOrEqualFilterTest extends \PHPUnit_Framework_TestCase
+class GreaterThanOrEqualFilterTest extends TestCase
 {
     public function testCreatesGreaterThanOrEqualCondition()
     {
@@ -16,7 +16,7 @@ class GreaterThanOrEqualFilterTest extends \PHPUnit_Framework_TestCase
             'path' => ':memory:'
         ]));
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             "table.startDate >= '2015-09-01'",
             (new GreaterThanOrEqualFilter('table.startDate'))
                 ->bindValues('2015-09-01')

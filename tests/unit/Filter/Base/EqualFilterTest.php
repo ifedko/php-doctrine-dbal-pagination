@@ -4,10 +4,10 @@ namespace Ifedko\DoctrineDbalPagination\Test\Filter\Base;
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Mockery;
 use Ifedko\DoctrineDbalPagination\Filter\Base\EqualFilter;
+use PHPUnit\Framework\TestCase;
 
-class EqualFilterTest extends \PHPUnit_Framework_TestCase
+class EqualFilterTest extends TestCase
 {
     public function testCreatesEquationConditionWithInteger()
     {
@@ -16,7 +16,7 @@ class EqualFilterTest extends \PHPUnit_Framework_TestCase
             'path' => ':memory:'
         ]));
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             "table.user_id = '12'",
             (new EqualFilter('table.user_id', \PDO::PARAM_INT))
                 ->bindValues(12)
@@ -32,7 +32,7 @@ class EqualFilterTest extends \PHPUnit_Framework_TestCase
             'path' => ':memory:'
         ]));
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             "table.login = 'xiag'",
             (new EqualFilter('table.login', \PDO::PARAM_STR))
                 ->bindValues('xiag')
@@ -48,7 +48,7 @@ class EqualFilterTest extends \PHPUnit_Framework_TestCase
             'path' => ':memory:'
         ]));
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             "table.user_id = '12'",
             (new EqualFilter('table.user_id', \PDO::PARAM_INT))
                 ->bindValues('12not-an-integer')

@@ -2,12 +2,12 @@
 
 namespace Ifedko\DoctrineDbalPagination\Test\Filter\Base;
 
-use Mockery;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Ifedko\DoctrineDbalPagination\Filter\Base\LikeFilter;
+use PHPUnit\Framework\TestCase;
 
-class LikeFilterTest extends \PHPUnit_Framework_TestCase
+class LikeFilterTest extends TestCase
 {
     public function testApplyWithSingleColumnsReturnQueryBuilderSuccess()
     {
@@ -19,7 +19,7 @@ class LikeFilterTest extends \PHPUnit_Framework_TestCase
         $likeFilter = new LikeFilter('field');
         $likeFilter->bindValues('something like');
         $queryBuilder = $likeFilter->apply($queryBuilder);
-        $this->assertContains(
+        $this->assertStringContainsString(
             "field LIKE '%something like%'",
             $queryBuilder->getSQL()
         );
@@ -37,7 +37,7 @@ class LikeFilterTest extends \PHPUnit_Framework_TestCase
         $likeFilter = new LikeFilter(['field1', 'field2']);
         $likeFilter->bindValues('something like');
         $queryBuilder = $likeFilter->apply($queryBuilder);
-        $this->assertContains(
+        $this->assertStringContainsString(
             "(field1 LIKE '%something like%') OR (field2 LIKE '%something like%')",
             $queryBuilder->getSQL()
         );
@@ -55,7 +55,7 @@ class LikeFilterTest extends \PHPUnit_Framework_TestCase
         $likeFilter = new LikeFilter('field', ['operator' => 'ILIKE']);
         $likeFilter->bindValues('something like');
         $queryBuilder = $likeFilter->apply($queryBuilder);
-        $this->assertContains(
+        $this->assertStringContainsString(
             "field ILIKE '%something like%'",
             $queryBuilder->getSQL()
         );

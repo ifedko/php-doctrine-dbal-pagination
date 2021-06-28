@@ -4,9 +4,12 @@ namespace Ifedko\DoctrineDbalPagination\Test\Filter\Base;
 
 use Mockery;
 use Ifedko\DoctrineDbalPagination\Filter\Base\DateRangeFilter;
+use PHPUnit\Framework\TestCase;
 
-class DateRangeFilterTest extends \PHPUnit_Framework_TestCase
+class DateRangeFilterTest extends TestCase
 {
+    use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
     public function testApplyReturnQueryBuilderSuccess()
     {
         $queryBuilderMock = Mockery::mock('Doctrine\DBAL\Query\QueryBuilder')

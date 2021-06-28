@@ -4,9 +4,12 @@ namespace Ifedko\DoctrineDbalPagination\Test;
 
 use Mockery;
 use Ifedko\DoctrineDbalPagination\ListPagination;
+use PHPUnit\Framework\TestCase;
 
-class ListPaginationTest extends \PHPUnit_Framework_TestCase
+class ListPaginationTest extends TestCase
 {
+    use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
     public function testGetWithCorrectLimitAndOffset()
     {
         $limit = 2;
@@ -69,7 +72,7 @@ class ListPaginationTest extends \PHPUnit_Framework_TestCase
     {
         $statementMock = Mockery::mock('\Doctrine\DBAL\Statement', [
             'rowCount' => $expectedTotal,
-            'fetchAll' => $expectedItems
+            'fetchAllAssociative' => $expectedItems
         ]);
 
         $queryBuilderMock = Mockery::mock('\Doctrine\DBAL\Query\QueryBuilder');

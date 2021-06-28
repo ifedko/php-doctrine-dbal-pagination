@@ -5,9 +5,12 @@ namespace Ifedko\DoctrineDbalPagination\Test\Sorting;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Ifedko\DoctrineDbalPagination\Sorting\ByColumn;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 
-class ByColumnTest extends \PHPUnit_Framework_TestCase
+class ByColumnTest extends TestCase
 {
+    use m\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
     public function testConfiguresSortingInQueryBuilder()
     {
         $builder = m::mock(QueryBuilder::class);
