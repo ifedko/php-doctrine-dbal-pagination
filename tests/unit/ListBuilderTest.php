@@ -3,9 +3,12 @@
 namespace Ifedko\DoctrineDbalPagination\Test;
 
 use Mockery;
+use PHPUnit\Framework\TestCase;
 
-class ListBuilderTest extends \PHPUnit_Framework_TestCase
+class ListBuilderTest extends TestCase
 {
+    use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
     public function testConfigureSuccess()
     {
         $dbConnection = self::createDbConnectionMock();

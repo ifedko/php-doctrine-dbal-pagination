@@ -12,6 +12,7 @@ use Ifedko\DoctrineDbalPagination\Filter\Base\LessThanOrEqualFilter;
 use Ifedko\DoctrineDbalPagination\Filter\FilterInterface;
 use Ifedko\DoctrineDbalPagination\ListBuilder;
 use Ifedko\DoctrineDbalPagination\Filter\Base\EqualFilter;
+use PHPUnit\Framework\TestCase;
 
 class TestListBuilder extends ListBuilder
 {
@@ -70,8 +71,10 @@ class TestListBuilder extends ListBuilder
     }
 }
 
-class ListPaginationFactoryTest extends \PHPUnit_Framework_TestCase
+class ListPaginationFactoryTest extends TestCase
 {
+    use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
     public function testCreateByLogIOSListBuilderTypeSuccess()
     {
         $dbConnectionMock = self::createDbConnectionMock();
@@ -111,7 +114,7 @@ class ListPaginationFactoryTest extends \PHPUnit_Framework_TestCase
             'sortBy' => 'name'
         ]);
 
-        $this->assertContains('ORDER BY name ASC', $builder->query()->getSQL());
+        $this->assertStringContainsString('ORDER BY name ASC', $builder->query()->getSQL());
     }
 
     public function testHasDefaultSorting()
@@ -120,7 +123,7 @@ class ListPaginationFactoryTest extends \PHPUnit_Framework_TestCase
 
         $builder->configure([]);
 
-        $this->assertContains('ORDER BY user.created_at DESC', $builder->query()->getSQL());
+        $this->assertStringContainsString('ORDER BY user.created_at DESC', $builder->query()->getSQL());
     }
 
     public function testSupportsComplexSorting()

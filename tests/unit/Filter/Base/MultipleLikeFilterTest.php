@@ -5,8 +5,9 @@ namespace Ifedko\DoctrineDbalPagination\Test\Filter\Base;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Ifedko\DoctrineDbalPagination\Filter\Base\MultipleLikeFilter;
+use PHPUnit\Framework\TestCase;
 
-class MultipleLikeFilterTest extends \PHPUnit_Framework_TestCase
+class MultipleLikeFilterTest extends TestCase
 {
     public function testApplyWithSingleColumnReturnQueryBuilderSuccess()
     {
@@ -15,7 +16,7 @@ class MultipleLikeFilterTest extends \PHPUnit_Framework_TestCase
         $queryBuilder = $likeFilter->apply(self::queryBuilder());
 
         $this->assertInstanceOf('Doctrine\DBAL\Query\QueryBuilder', $queryBuilder);
-        $this->assertContains(
+        $this->assertStringContainsString(
             "(field LIKE '%something%') AND (field LIKE '%like%')",
             $queryBuilder->getSQL()
         );
@@ -26,7 +27,7 @@ class MultipleLikeFilterTest extends \PHPUnit_Framework_TestCase
         $likeFilter = new MultipleLikeFilter('field');
         $likeFilter->bindValues('something -like');
         $queryBuilder = $likeFilter->apply(self::queryBuilder());
-        $this->assertContains(
+        $this->assertStringContainsString(
             "(field LIKE '%something%') AND (COALESCE(field, '') NOT LIKE '%like%')",
             $queryBuilder->getSQL()
         );
@@ -37,7 +38,7 @@ class MultipleLikeFilterTest extends \PHPUnit_Framework_TestCase
         $likeFilter = new MultipleLikeFilter(['field1', 'field2']);
         $likeFilter->bindValues('w1 w2');
         $queryBuilder = $likeFilter->apply(self::queryBuilder());
-        $this->assertContains(
+        $this->assertStringContainsString(
             "((field1 LIKE '%w1%') OR (field2 LIKE '%w1%')) AND ((field1 LIKE '%w2%') OR (field2 LIKE '%w2%'))",
             $queryBuilder->getSQL()
         );
@@ -48,7 +49,7 @@ class MultipleLikeFilterTest extends \PHPUnit_Framework_TestCase
         $likeFilter = new MultipleLikeFilter('field', ['operator' => 'ILIKE']);
         $likeFilter->bindValues('something like');
         $queryBuilder = $likeFilter->apply(self::queryBuilder());
-        $this->assertContains(
+        $this->assertStringContainsString(
             "(field ILIKE '%something%') AND (field ILIKE '%like%')",
             $queryBuilder->getSQL()
         );
@@ -63,8 +64,8 @@ class MultipleLikeFilterTest extends \PHPUnit_Framework_TestCase
         $likeFilter->bindValues('something like');
         $queryBuilder = $likeFilter->apply(self::queryBuilder());
 
-        $this->assertContains("(name ILIKE 'something%')", $queryBuilder->getSQL());
-        $this->assertContains("(email ILIKE '%something%')", $queryBuilder->getSQL());
+        $this->assertStringContainsString("(name ILIKE 'something%')", $queryBuilder->getSQL());
+        $this->assertStringContainsString("(email ILIKE '%something%')", $queryBuilder->getSQL());
 
     }
 
@@ -78,7 +79,7 @@ class MultipleLikeFilterTest extends \PHPUnit_Framework_TestCase
 
         $queryBuilder = $likeFilter->apply(self::queryBuilder());
 
-        self::assertContains(
+        self::assertStringContainsString(
             "name ILIKE '%0%'",
             $queryBuilder->getSQL()
         );
@@ -86,7 +87,7 @@ class MultipleLikeFilterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @return QueryBuilder
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     private static function queryBuilder()
     {

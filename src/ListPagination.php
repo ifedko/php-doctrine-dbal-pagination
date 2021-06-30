@@ -40,7 +40,7 @@ class ListPagination
         $offset = (intval($offset) >= 0) ? $offset : self::DEFAULT_OFFSET;
 
         $pageItems = $this->listQueryBuilder->query()
-            ->setMaxResults($limit)->setFirstResult($offset)->execute()->fetchAll();
+            ->setMaxResults($limit)->setFirstResult($offset)->execute()->fetchAllAssociative();
 
         return [
             'total' => $this->listQueryBuilder->totalQuery()

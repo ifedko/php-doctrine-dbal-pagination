@@ -4,9 +4,12 @@ namespace Ifedko\DoctrineDbalPagination\Test\Filter\Base;
 
 use Mockery;
 use Ifedko\DoctrineDbalPagination\Filter\Base\MultipleEqualFilter;
+use PHPUnit\Framework\TestCase;
 
-class MultipleEqualFilterTest extends \PHPUnit_Framework_TestCase
+class MultipleEqualFilterTest extends TestCase
 {
+    use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
     public function testApplyReturnQueryBuilderSuccess()
     {
         $queryBuilderMock = Mockery::mock('Doctrine\DBAL\Query\QueryBuilder')
