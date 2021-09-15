@@ -18,6 +18,8 @@ class MultipleEqualFilter implements FilterInterface
      */
     private $values;
 
+    private $type;
+
     /**
      * @param string $column
      */
@@ -29,13 +31,14 @@ class MultipleEqualFilter implements FilterInterface
     /**
      * {@inheritDoc}
      */
-    public function bindValues($values)
+    public function bindValues($values, $type = Connection::PARAM_STR_ARRAY)
     {
         if (!is_array($values)) {
             $values = [$values];
         }
 
         $this->values = $values;
+        $this->type = $type;
     }
 
     /**
@@ -43,10 +46,8 @@ class MultipleEqualFilter implements FilterInterface
      */
     public function apply(QueryBuilder $builder)
     {
-        $bindName = $this->column . '_values';
         $builder
-            ->andWhere($this->column . " IN (:$bindName)")
-            ->setParameter($bindName, $this->values, Connection::PARAM_STR_ARRAY);
+            ->andWhere($this->column . " IN (" . $builder->createNamedParameter($this->values, $this->type) . ")");
         return $builder;
     }
 }
