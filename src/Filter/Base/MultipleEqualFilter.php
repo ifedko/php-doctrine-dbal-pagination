@@ -43,9 +43,10 @@ class MultipleEqualFilter implements FilterInterface
      */
     public function apply(QueryBuilder $builder)
     {
+        $bindName = $this->column . '_values';
         $builder
-            ->andWhere($this->column . ' IN (:values)')
-            ->setParameter('values', $this->values, Connection::PARAM_STR_ARRAY);
+            ->andWhere($this->column . " IN (:$bindName)")
+            ->setParameter($bindName, $this->values, Connection::PARAM_STR_ARRAY);
         return $builder;
     }
 }
