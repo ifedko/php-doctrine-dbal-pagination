@@ -23,22 +23,22 @@ class MultipleEqualFilter implements FilterInterface
     /**
      * @param string $column
      */
-    public function __construct($column)
+    public function __construct($column, $type = Connection::PARAM_STR_ARRAY)
     {
         $this->column = $column;
+        $this->type = $type;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function bindValues($values, $type = Connection::PARAM_STR_ARRAY)
+    public function bindValues($values)
     {
         if (!is_array($values)) {
             $values = [$values];
         }
 
         $this->values = $values;
-        $this->type = $type;
     }
 
     /**
