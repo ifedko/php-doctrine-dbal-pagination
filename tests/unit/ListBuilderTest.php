@@ -50,6 +50,13 @@ class ListBuilderTest extends TestCase
             'sortBy' => 'field1',
         ];
         $queryBuilderMock = Mockery::mock('Doctrine\DBAL\Query\QueryBuilder');
+        $queryBuilderMock
+            ->shouldReceive('resetQueryPart')
+            ->andReturn($queryBuilderMock);
+
+        $queryBuilderMock
+            ->shouldReceive('select')
+            ->andReturn($queryBuilderMock);
 
         $listBuilderMock = Mockery::mock('Ifedko\DoctrineDbalPagination\ListBuilder[baseQuery]', [$dbConnection])
             ->makePartial()
@@ -60,6 +67,30 @@ class ListBuilderTest extends TestCase
         $queryBuilder = $listBuilderMock->totalQuery();
 
         $this->assertInstanceOf('Doctrine\DBAL\Query\QueryBuilder', $queryBuilder);
+    }
+
+    public function testTotalQueryResetSelectPart()
+    {
+        $dbConnection = self::createDbConnectionMock();
+        $queryBuilderMock = Mockery::mock('Doctrine\DBAL\Query\QueryBuilder');
+        $queryBuilderMock
+            ->shouldReceive('resetQueryPart')
+            ->with('select')
+            ->andReturn($queryBuilderMock)
+            ->once();
+
+        $queryBuilderMock
+            ->shouldReceive('select')
+            ->with('1')
+            ->andReturn($queryBuilderMock)
+            ->once();
+
+        $listBuilderMock = Mockery::mock('Ifedko\DoctrineDbalPagination\ListBuilder', [$dbConnection])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+        $listBuilderMock->shouldReceive('baseQuery')->andReturn($queryBuilderMock);
+
+        $listBuilderMock->totalQuery();
     }
 
     private static function createDbConnectionMock()

@@ -66,7 +66,10 @@ abstract class ListBuilder
      */
     public function totalQuery()
     {
-        $queryBuilder = $this->baseQuery();
+        $queryBuilder = (clone $this->baseQuery())
+            ->resetQueryPart('select')
+            ->select('1');
+
         $queryBuilder = $this->applyFilters($queryBuilder);
         return $queryBuilder;
     }
