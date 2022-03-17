@@ -85,6 +85,17 @@ class MultipleLikeFilterTest extends TestCase
         );
     }
 
+    public function testDoNotApplyMinusSymbolWithoutExcludingWord()
+    {
+        $likeFilter = new MultipleLikeFilter('field');
+        $likeFilter->bindValues('something - like');
+        $queryBuilder = $likeFilter->apply(self::queryBuilder());
+        $this->assertStringNotContainsString(
+            'COALESCE',
+            $queryBuilder->getSQL()
+        );
+    }
+
     /**
      * @return QueryBuilder
      * @throws \Doctrine\DBAL\Exception
