@@ -48,7 +48,7 @@ class MultipleLikeFilter implements FilterInterface
         });
 
         foreach ($values as $word) {
-            if ($word[0] == '-') {
+            if ($word[0] == '-' && $word !== '-') {
                 $this->excludeValues[] = substr($word, 1);
             } else {
                 $this->includeValues[] = $word;
