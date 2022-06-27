@@ -32,12 +32,13 @@ class ListPagination
     /**
      * @param int $limit
      * @param int $offset
+     *
      * @return array
      */
-    public function get($limit, $offset)
+    public function get(int $limit, int $offset): array
     {
-        $limit = (intval($limit) > 0) ? intval($limit) : self::DEFAULT_LIMIT;
-        $offset = (intval($offset) >= 0) ? $offset : self::DEFAULT_OFFSET;
+        $limit = ($limit > 0) ? $limit : self::DEFAULT_LIMIT;
+        $offset = ($offset >= 0) ? $offset : self::DEFAULT_OFFSET;
 
         $pageItems = $this->listQueryBuilder->query()
             ->setMaxResults($limit)->setFirstResult($offset)->execute()->fetchAllAssociative();
@@ -53,7 +54,7 @@ class ListPagination
         ];
     }
 
-    public function definePageItemsMapCallback($callback)
+    public function definePageItemsMapCallback($callback): void
     {
         $this->pageItemsMapCallback = $callback;
     }

@@ -26,7 +26,7 @@ class DateRangeFilter implements FilterInterface
     /**
      * @param string $column
      */
-    public function __construct($column)
+    public function __construct(string $column)
     {
         $this->column = $column;
     }
@@ -34,7 +34,7 @@ class DateRangeFilter implements FilterInterface
     /**
      * {@inheritDoc}
      */
-    public function bindValues($values)
+    public function bindValues($values): void
     {
         $beginValue = !empty($values['begin']) ? $values['begin'] : null;
         $endValue = !empty($values['end']) ? $values['end'] : null;
@@ -46,7 +46,7 @@ class DateRangeFilter implements FilterInterface
     /**
      * {@inheritDoc}
      */
-    public function apply(QueryBuilder $builder)
+    public function apply(QueryBuilder $builder): QueryBuilder
     {
         if (!$this->beginValue && !$this->endValue) {
             return $builder;

@@ -21,7 +21,7 @@ class GreaterThanOrEqualFilter implements FilterInterface
     /**
      * @param string $column
      */
-    public function __construct($column)
+    public function __construct(string $column)
     {
         $this->column = $column;
     }
@@ -29,17 +29,17 @@ class GreaterThanOrEqualFilter implements FilterInterface
     /**
      * {@inheritDoc}
      */
-    public function bindValues($values)
+    public function bindValues($values): void
     {
         $this->value = $values;
-        return $this;
     }
 
     /**
-     * @param \Doctrine\DBAL\Query\QueryBuilder $builder
-     * @return \Doctrine\DBAL\Query\QueryBuilder
+     * @param QueryBuilder $builder
+     *
+     * @return QueryBuilder
      */
-    public function apply(QueryBuilder $builder)
+    public function apply(QueryBuilder $builder): QueryBuilder
     {
         $builder->andWhere($builder->expr()->gte($this->column, $builder->expr()->literal($this->value)));
 

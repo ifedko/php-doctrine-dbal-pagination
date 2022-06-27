@@ -31,9 +31,10 @@ class ByColumn implements SortingInterface
 
     /**
      * @param array $values
+     *
      * @return array values that were actually used to define sorting
      */
-    public function bindValues($values)
+    public function bindValues(array $values): array
     {
         $appliedValues = [];
         $this->sortColumn = null;
@@ -62,10 +63,11 @@ class ByColumn implements SortingInterface
     }
 
     /**
-     * @param \Doctrine\DBAL\Query\QueryBuilder $builder
-     * @return \Doctrine\DBAL\Query\QueryBuilder
+     * @param QueryBuilder $builder
+     *
+     * @return QueryBuilder
      */
-    public function apply(QueryBuilder $builder)
+    public function apply(QueryBuilder $builder): QueryBuilder
     {
         if ($this->sortColumn) {
             $builder->addOrderBy($this->sortColumn, $this->sortDirection);

@@ -31,7 +31,7 @@ class MultipleLikeFilter implements FilterInterface
      * @param string|array $columns
      * @param array $options
      */
-    public function __construct($columns, $options=[])
+    public function __construct($columns, array $options = [])
     {
         $this->columns = (!is_array($columns)) ? [$columns] : $columns;
         $this->options = array_merge(['operator' => 'LIKE', 'matchFromStart' => []], $options);
@@ -40,28 +40,26 @@ class MultipleLikeFilter implements FilterInterface
     /**
      * {@inheritDoc}
      */
-    public function bindValues($values)
+    public function bindValues($values): void
     {
         $values = explode(' ', $values);
-        $values = array_filter($values, static function($value){
+        $values = array_filter($values, static function ($value) {
             return $value !== null && $value !== false && $value !== '';
         });
 
         foreach ($values as $word) {
-            if ($word[0] == '-' && $word !== '-') {
+            if ($word[0] === '-' && $word !== '-') {
                 $this->excludeValues[] = substr($word, 1);
             } else {
                 $this->includeValues[] = $word;
             }
         }
-
-        return $this;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function apply(QueryBuilder $builder)
+    public function apply(QueryBuilder $builder): QueryBuilder
     {
         $andConditions = [];
         foreach ($this->includeValues as $value) {
@@ -70,7 +68,7 @@ class MultipleLikeFilter implements FilterInterface
                 $orConditions[] = $builder->expr()->comparison(
                     $column,
                     $this->options['operator'],
-                    $builder->expr()->literal($this->leftWildcardOperator($column) . $value . '%', \PDO::PARAM_STR)
+                    $builder->expr()->literal($this->leftWildcardOperator($column).$value.'%', \PDO::PARAM_STR)
                 );
             }
             $andConditions[] = $builder->expr()->orX()->addMultiple($orConditions);
@@ -79,9 +77,9 @@ class MultipleLikeFilter implements FilterInterface
         foreach ($this->excludeValues as $value) {
             foreach ($this->columns as $column) {
                 $andCondition = $builder->expr()->comparison(
-                    'COALESCE(' . $column . ", '')",
-                    'NOT ' . $this->options['operator'],
-                    $builder->expr()->literal($this->leftWildcardOperator($column) . $value . '%', \PDO::PARAM_STR)
+                    'COALESCE('.$column.", '')",
+                    'NOT '.$this->options['operator'],
+                    $builder->expr()->literal($this->leftWildcardOperator($column).$value.'%', \PDO::PARAM_STR)
                 );
                 $andConditions[] = $andCondition;
             }
@@ -92,10 +90,10 @@ class MultipleLikeFilter implements FilterInterface
         return $builder;
     }
 
-    private function leftWildcardOperator($column)
+    private function leftWildcardOperator($column): string
     {
         return isset($this->options['matchFromStart'])
-            && is_array($this->options['matchFromStart'])
-            && in_array($column, $this->options['matchFromStart']) ? '' : '%';
+        && is_array($this->options['matchFromStart'])
+        && in_array($column, $this->options['matchFromStart'], true) ? '' : '%';
     }
 }

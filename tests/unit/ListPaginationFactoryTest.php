@@ -21,7 +21,7 @@ class TestListBuilder extends ListBuilder
     /**
      * {@inheritDoc}
      */
-    protected function configureSorting($parameters)
+    protected function configureSorting(array $parameters)
     {
         if ($this->testSortingModel) {
             $this->sortUsing($this->testSortingModel, $parameters);
@@ -37,7 +37,7 @@ class TestListBuilder extends ListBuilder
     /**
      * {@inheritDoc}
      */
-    protected function configureFilters($parameters)
+    protected function configureFilters(array $parameters)
     {
         $mapAvailableFilterByParameter = [
             'user_id' => new EqualFilter('id', \PDO::PARAM_INT),
