@@ -10,11 +10,12 @@ interface FilterInterface
      * @param mixed $values
      * @return void
      */
-    public function bindValues($values);
+    public function bindValues($values): void;
 
     /**
-     * @param \Doctrine\DBAL\Query\QueryBuilder $builder
-     * @return \Doctrine\DBAL\Query\QueryBuilder
+     * @param QueryBuilder $builder
+     *
+     * @return QueryBuilder
      */
-    public function apply(QueryBuilder $builder);
+    public function apply(QueryBuilder $builder): QueryBuilder;
 }
