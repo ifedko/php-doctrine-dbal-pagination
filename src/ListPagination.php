@@ -37,7 +37,7 @@ class ListPagination
     public function get($limit, $offset)
     {
         $limit = (intval($limit) > 0) ? intval($limit) : self::DEFAULT_LIMIT;
-        $offset = (intval($offset) >= 0) ? $offset : self::DEFAULT_OFFSET;
+        $offset = (intval($offset) >= 0) ? intval($offset) : self::DEFAULT_OFFSET;
 
         $pageItems = $this->listQueryBuilder->query()
             ->setMaxResults($limit)->setFirstResult($offset)->execute()->fetchAllAssociative();
