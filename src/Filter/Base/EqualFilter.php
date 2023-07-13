@@ -24,7 +24,7 @@ class EqualFilter implements FilterInterface
 
     /**
      * @param string $column
-     * @param string $type \PDO::PARAM_* constant
+     * @param int $type \PDO::PARAM_* constant
      */
     public function __construct($column, $type)
     {
@@ -37,7 +37,7 @@ class EqualFilter implements FilterInterface
      */
     public function bindValues($values)
     {
-        $this->value = ($this->type === \PDO::PARAM_INT) ? intval($values) : $values;
+        $this->value = ($this->type === \PDO::PARAM_INT) ? (int)$values : $values;
         return $this;
     }
 
