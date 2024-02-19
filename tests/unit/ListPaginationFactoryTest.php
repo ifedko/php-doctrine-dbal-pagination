@@ -2,74 +2,14 @@
 
 namespace Ifedko\DoctrineDbalPagination\Test;
 
-use Ifedko\DoctrineDbalPagination\Sorting\ByColumn;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Ifedko\DoctrineDbalPagination\Exception\ListPaginationFactoryException;
+use Ifedko\DoctrineDbalPagination\ListPagination;
+use Ifedko\DoctrineDbalPagination\ListPaginationFactory;
 use Ifedko\DoctrineDbalPagination\SortingInterface;
 use Mockery;
-use Ifedko\DoctrineDbalPagination\ListPaginationFactory;
-
-use Ifedko\DoctrineDbalPagination\Filter\Base\GreaterThanOrEqualFilter;
-use Ifedko\DoctrineDbalPagination\Filter\Base\LessThanOrEqualFilter;
-use Ifedko\DoctrineDbalPagination\Filter\FilterInterface;
-use Ifedko\DoctrineDbalPagination\ListBuilder;
-use Ifedko\DoctrineDbalPagination\Filter\Base\EqualFilter;
 use PHPUnit\Framework\TestCase;
-
-class TestListBuilder extends ListBuilder
-{
-    public $testSortingModel;
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function configureSorting($parameters)
-    {
-        if ($this->testSortingModel) {
-            $this->sortUsing($this->testSortingModel, $parameters);
-        }
-
-        $this->sortUsing(new ByColumn('id', 'user_id'), $parameters);
-        $this->sortUsing(new ByColumn('name', 'name'), $parameters);
-        $this->sortUsing(new ByColumn('created', 'user.created_at', 'DESC'), $parameters);
-
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function configureFilters($parameters)
-    {
-        $mapAvailableFilterByParameter = [
-            'user_id' => new EqualFilter('id', \PDO::PARAM_INT),
-            'name' => new EqualFilter('name', \PDO::PARAM_STR),
-            'created_at_from' => new GreaterThanOrEqualFilter('user.created_at'),
-            'created_at_to' => new LessThanOrEqualFilter('user.created_at')
-        ];
-
-        /* @var $filter FilterInterface */
-        foreach ($mapAvailableFilterByParameter as $parameterName => $filter) {
-            if (isset($parameters[$parameterName])) {
-                $filter->bindValues($parameters[$parameterName]);
-                $this->filters[] = $filter;
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function baseQuery()
-    {
-        $builder = $this->getQueryBuilder();
-        $builder
-            ->select('id', 'name', 'created_at')
-            ->from('users')
-        ;
-        return $builder;
-    }
-}
 
 class ListPaginationFactoryTest extends TestCase
 {
@@ -78,21 +18,21 @@ class ListPaginationFactoryTest extends TestCase
     public function testCreateByLogIOSListBuilderTypeSuccess()
     {
         $dbConnectionMock = self::createDbConnectionMock();
-        $listBuilderClassName = 'Ifedko\\DoctrineDbalPagination\\Test\\TestListBuilder';
+        $listBuilderClassName = TestListBuilder::class;
 
         $listPagination = ListPaginationFactory::create($dbConnectionMock, $listBuilderClassName);
 
-        $this->assertInstanceOf('Ifedko\\DoctrineDbalPagination\\ListPagination', $listPagination);
+        $this->assertInstanceOf(ListPagination::class, $listPagination);
     }
 
     public function testCreateByLogIOSListBuilderTypeWithLowerCaseInTypeNameSuccess()
     {
         $dbConnectionMock = self::createDbConnectionMock();
-        $listBuilderClassName = 'Ifedko\\DoctrineDbalPagination\\Test\\testListBuilder';
+        $listBuilderClassName = TestListBuilder::class;
 
         $listPagination = ListPaginationFactory::create($dbConnectionMock, $listBuilderClassName);
 
-        $this->assertInstanceOf('Ifedko\\DoctrineDbalPagination\\ListPagination', $listPagination);
+        $this->assertInstanceOf(ListPagination::class, $listPagination);
     }
 
     public function testCreateIfUnknownListBuilderTypeThrowException()
@@ -101,7 +41,7 @@ class ListPaginationFactoryTest extends TestCase
         $listBuilderClassName = 'Ifedko\\DoctrineDbalPagination\\Test\\NonExistingListBuilder';
         $expectedExceptionMessage = sprintf('Unknown list builder class %s', $listBuilderClassName);
 
-        self::expectException('Ifedko\\DoctrineDbalPagination\\Exception\\ListPaginationFactoryException');
+        self::expectException(ListPaginationFactoryException::class);
         self::expectExceptionMessage($expectedExceptionMessage);
         ListPaginationFactory::create($dbConnectionMock, $listBuilderClassName);
     }
@@ -109,10 +49,7 @@ class ListPaginationFactoryTest extends TestCase
     public function testSupportsSorting()
     {
         $builder = new TestListBuilder(self::createDbConnectionMock());
-
-        $builder->configure([
-            'sortBy' => 'name'
-        ]);
+        $builder->configure(['sortBy' => 'name']);
 
         $this->assertStringContainsString('ORDER BY name ASC', $builder->query()->getSQL());
     }
@@ -120,7 +57,6 @@ class ListPaginationFactoryTest extends TestCase
     public function testHasDefaultSorting()
     {
         $builder = new TestListBuilder(self::createDbConnectionMock());
-
         $builder->configure([]);
 
         $this->assertStringContainsString('ORDER BY user.created_at DESC', $builder->query()->getSQL());
@@ -142,7 +78,6 @@ class ListPaginationFactoryTest extends TestCase
     public function testProvidesSortingParams()
     {
         $builder = new TestListBuilder(self::createDbConnectionMock());
-
         $builder->configure([
             'sortBy' => 'name',
             'foo' => 'bar',
@@ -150,16 +85,16 @@ class ListPaginationFactoryTest extends TestCase
         ]);
 
         $this->assertEquals(
-            [
-                'sortBy' => 'name',
-                'sortOrder' => 'ASC'
-            ],
+            ['sortBy' => 'name', 'sortOrder' => 'ASC'],
             $builder->sortingParameters()
         );
     }
 
     private static function createDbConnectionMock()
     {
-        return Mockery::mock('\Doctrine\DBAL\Connection');
+        $dbConnectionMock =  Mockery::mock(Connection::class);
+        $dbConnectionMock->allows('getDatabasePlatform')->andReturn(new PostgreSQLPlatform());
+
+        return $dbConnectionMock;
     }
 }

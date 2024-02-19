@@ -2,44 +2,34 @@
 
 namespace Ifedko\DoctrineDbalPagination\Filter\Base;
 
-
 use Doctrine\DBAL\Query\QueryBuilder;
 use Ifedko\DoctrineDbalPagination\Filter\FilterInterface;
 
 class GreaterThanOrEqualFilter implements FilterInterface
 {
-    /**
-     * @var string
-     */
-    private $column;
+    private string $column;
 
     /**
-     * @var string
+     * @var int|string
      */
     private $value;
 
-    /**
-     * @param string $column
-     */
-    public function __construct($column)
+    public function __construct(string $column)
     {
         $this->column = $column;
     }
 
     /**
-     * {@inheritDoc}
+     * @param int|string $values
+     * @return $this
      */
-    public function bindValues($values)
+    public function bindValues($values): self
     {
         $this->value = $values;
         return $this;
     }
 
-    /**
-     * @param \Doctrine\DBAL\Query\QueryBuilder $builder
-     * @return \Doctrine\DBAL\Query\QueryBuilder
-     */
-    public function apply(QueryBuilder $builder)
+    public function apply(QueryBuilder $builder): QueryBuilder
     {
         $builder->andWhere($builder->expr()->gte($this->column, $builder->expr()->literal($this->value)));
 

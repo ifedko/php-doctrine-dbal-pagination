@@ -2,51 +2,38 @@
 
 namespace Ifedko\DoctrineDbalPagination\Filter\Base;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Ifedko\DoctrineDbalPagination\Filter\FilterInterface;
 
 class DateRangeFilter implements FilterInterface
 {
-    /**
-     * @var string
-     */
-    private $column;
+    private string $column;
 
-    /**
-     * @var string
-     */
-    private $beginValue;
+    private ?string $beginValue;
 
-    /**
-     * @var string
-     */
-    private $endValue;
+    private ?string $endValue;
 
-    /**
-     * @param string $column
-     */
-    public function __construct($column)
+    public function __construct(string $column)
     {
         $this->column = $column;
     }
 
     /**
-     * {@inheritDoc}
+     * @param array $values
+     * @return $this
      */
-    public function bindValues($values)
+    public function bindValues($values): self
     {
         $beginValue = !empty($values['begin']) ? $values['begin'] : null;
         $endValue = !empty($values['end']) ? $values['end'] : null;
 
         $this->beginValue = $beginValue;
         $this->endValue = $endValue;
+
+        return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function apply(QueryBuilder $builder)
+    public function apply(QueryBuilder $builder): QueryBuilder
     {
         if (!$this->beginValue && !$this->endValue) {
             return $builder;

@@ -2,34 +2,28 @@
 
 namespace Ifedko\DoctrineDbalPagination\Test\Filter\Base;
 
-use Mockery;
+use Doctrine\DBAL\Query\QueryBuilder;
+use Ifedko\DoctrineDbalPagination\Test\QueryBuilderTestCase;
 use Ifedko\DoctrineDbalPagination\Filter\Base\MultipleEqualFilter;
-use PHPUnit\Framework\TestCase;
 
-class MultipleEqualFilterTest extends TestCase
+class MultipleEqualFilterTest extends QueryBuilderTestCase
 {
-    use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-
-    public function testApplyReturnQueryBuilderSuccess()
+    public function testApplyReturnQueryBuilderSuccess(): void
     {
-        $queryBuilderMock = Mockery::mock('Doctrine\DBAL\Query\QueryBuilder')
-            ->makePartial();
-
         $multipleEqualFilter = new MultipleEqualFilter('field');
         $multipleEqualFilter->bindValues(['value1', 'value2']);
-        $queryBuilder = $multipleEqualFilter->apply($queryBuilderMock);
+        $queryBuilder = $multipleEqualFilter->apply(static::$queryBuilder);
 
-        $this->assertInstanceOf('Doctrine\DBAL\Query\QueryBuilder', $queryBuilder);
+        $this->assertInstanceOf(QueryBuilder::class, $queryBuilder);
     }
 
-    public function testSeveralFilters()
+    public function testSeveralFilters(): void
     {
-        $queryBuilderMock = Mockery::mock('Doctrine\DBAL\Query\QueryBuilder')
-            ->makePartial();
+        $queryBuilder = static::$queryBuilder;
 
         $multipleEqualFilterOne = new MultipleEqualFilter('field_one');
         $multipleEqualFilterOne->bindValues(['value1', 'value2']);
-        $queryBuilder = $multipleEqualFilterOne->apply($queryBuilderMock);
+        $queryBuilder = $multipleEqualFilterOne->apply($queryBuilder);
 
         $multipleEqualFilterTwo = new MultipleEqualFilter('field_two');
         $multipleEqualFilterTwo->bindValues([1, 2]);

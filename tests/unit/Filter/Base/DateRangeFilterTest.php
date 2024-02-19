@@ -2,23 +2,18 @@
 
 namespace Ifedko\DoctrineDbalPagination\Test\Filter\Base;
 
-use Mockery;
+use Doctrine\DBAL\Query\QueryBuilder;
+use Ifedko\DoctrineDbalPagination\Test\QueryBuilderTestCase;
 use Ifedko\DoctrineDbalPagination\Filter\Base\DateRangeFilter;
-use PHPUnit\Framework\TestCase;
 
-class DateRangeFilterTest extends TestCase
+class DateRangeFilterTest extends QueryBuilderTestCase
 {
-    use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-
-    public function testApplyReturnQueryBuilderSuccess()
+    public function testApplyReturnQueryBuilderSuccess(): void
     {
-        $queryBuilderMock = Mockery::mock('Doctrine\DBAL\Query\QueryBuilder')
-            ->makePartial();
-
         $dateRangeFilter = new DateRangeFilter('field');
-        $dateRangeFilter->bindValues('2015-10-01 00:00:00', '2015-10-31 23:59:59');
-        $queryBuilder = $dateRangeFilter->apply($queryBuilderMock);
+        $dateRangeFilter->bindValues(['2015-10-01 00:00:00', '2015-10-31 23:59:59']);
+        $queryBuilder = $dateRangeFilter->apply(static::$queryBuilder);
 
-        $this->assertInstanceOf('Doctrine\DBAL\Query\QueryBuilder', $queryBuilder);
+        $this->assertInstanceOf(QueryBuilder::class, $queryBuilder);
     }
 }

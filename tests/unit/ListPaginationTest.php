@@ -2,11 +2,10 @@
 
 namespace Ifedko\DoctrineDbalPagination\Test;
 
-use Mockery;
 use Ifedko\DoctrineDbalPagination\ListPagination;
-use PHPUnit\Framework\TestCase;
+use Mockery;
 
-class ListPaginationTest extends TestCase
+class ListPaginationTest extends QueryBuilderTestCase
 {
     use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
@@ -14,14 +13,17 @@ class ListPaginationTest extends TestCase
     {
         $limit = 2;
         $offset = 0;
-        $expectedTotal = 15;
+        $expectedTotal = 2;
         $expectedItems = [
-            ['id' => 1, 'name' => 'name1'],
-            ['id' => 2, 'name' => 'name2']
+            ['id' => 1, 'name' => 'name1', 'created_at' => null],
+            ['id' => 2, 'name' => 'name2', 'created_at' => null]
         ];
-        $listBuilder = self::createListBuilderMock($expectedTotal, $expectedItems);
 
-        $listPagination = new ListPagination($listBuilder);
+        foreach ($expectedItems as $item) {
+            static::$connection->insert(self::TABLE_NAME, $item);
+        }
+
+        $listPagination = new ListPagination(new TestListBuilder(static::$connection));
         $listPage = $listPagination->get($limit, $offset);
 
         $this->assertEquals($expectedTotal, $listPage['total']);
@@ -30,16 +32,18 @@ class ListPaginationTest extends TestCase
 
     public function testGetWithNotCorrectLimitAndOffset()
     {
-        $limit = 'any limit';
-        $offset = 'any offset';
-        $expectedTotal = 15;
+        $limit = null;
+        $offset = -3;
+        $expectedTotal = 2;
         $expectedItems = [
-            ['id' => 1, 'name' => 'name1'],
-            ['id' => 2, 'name' => 'name2']
+            ['id' => 1, 'name' => 'name1', 'created_at' => null],
+            ['id' => 2, 'name' => 'name2', 'created_at' => null]
         ];
-        $listBuilder = self::createListBuilderMock($expectedTotal, $expectedItems);
+        foreach ($expectedItems as $item) {
+            static::$connection->insert(self::TABLE_NAME, $item);
+        }
 
-        $listPagination = new ListPagination($listBuilder);
+        $listPagination = new ListPagination(new TestListBuilder(static::$connection));
         $listPage = $listPagination->get($limit, $offset);
 
         $this->assertEquals($expectedTotal, $listPage['total']);
@@ -48,43 +52,25 @@ class ListPaginationTest extends TestCase
 
     public function testItIsPossibleToDefineAMapFunctionToApplyToItemsOfAPage()
     {
-        $listBuilder = self::createListBuilderMock(
-            1,
-            [
-                ['id' => 1, 'object' => '{"some":"json"}']
-            ]
-        );
+        $expectedItems = [
+            ['id' => 1, 'name' => '{"some":"json1"}', 'created_at' => null],
+            ['id' => 2, 'name' => '{"some":"json2"}', 'created_at' => null]
+        ];
+        foreach ($expectedItems as $item) {
+            static::$connection->insert(self::TABLE_NAME, $item);
+        }
 
-        $pager = new ListPagination($listBuilder);
-        $pager->definePageItemsMapCallback(function ($row) {
-            return array_merge($row, ['object' => json_decode($row['object'], true)]);
+        $listPagination = new ListPagination(new TestListBuilder(static::$connection));
+        $listPagination->definePageItemsMapCallback(function ($row) {
+            return array_merge($row, ['name' => json_decode($row['name'], true)]);
         });
 
         $this->assertEquals(
             [
-                ['id' => 1, 'object' => ['some' => 'json']]
+                ['id' => 1, 'name' => ['some' => 'json1'], 'created_at' => null],
+                ['id' => 2, 'name' => ['some' => 'json2'], 'created_at' => null]
             ],
-            $pager->get(10, 0)['items']
+            $listPagination->get(null, null)['items']
         );
-    }
-
-    private static function createListBuilderMock($expectedTotal, $expectedItems)
-    {
-        $statementMock = Mockery::mock('\Doctrine\DBAL\Statement', [
-            'rowCount' => $expectedTotal,
-            'fetchAllAssociative' => $expectedItems
-        ]);
-
-        $queryBuilderMock = Mockery::mock('\Doctrine\DBAL\Query\QueryBuilder');
-        $queryBuilderMock->shouldReceive('execute')->andReturn($statementMock);
-        $queryBuilderMock->shouldReceive('setMaxResults')->andReturn($queryBuilderMock);
-        $queryBuilderMock->shouldReceive('setFirstResult')->andReturn($queryBuilderMock);
-
-        $listBuilderMock = Mockery::mock('\Ifedko\DoctrineDbalPagination\ListBuilder');
-        $listBuilderMock->shouldReceive('totalQuery')->andReturn($queryBuilderMock);
-        $listBuilderMock->shouldReceive('query')->andReturn($queryBuilderMock);
-        $listBuilderMock->shouldReceive('sortingParameters')->andReturn([]);
-
-        return $listBuilderMock;
     }
 }
