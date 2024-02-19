@@ -62,7 +62,7 @@ class MultipleLikeFilter implements FilterInterface
 
         foreach ($this->excludeValues as $value) {
             foreach ($this->columns as $column) {
-                $andCondition = $builder->expr()->comparison(
+                $andCondition = $expressionBuilder->comparison(
                     'COALESCE(' . $column . ", '')",
                     'NOT ' . $this->options['operator'],
                     $expressionBuilder->literal($this->leftWildcardOperator($column) . $value . '%', \PDO::PARAM_STR)

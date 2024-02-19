@@ -37,8 +37,7 @@ class MultipleEqualFilter implements FilterInterface
 
     public function apply(QueryBuilder $builder): QueryBuilder
     {
-        $builder
-            ->andWhere($this->column . " IN (" . $builder->createNamedParameter($this->values, $this->type) . ")");
+        $builder->andWhere($this->column . " IN (" . $builder->createNamedParameter($this->values, $this->type) . ")");
 
         return $builder;
     }

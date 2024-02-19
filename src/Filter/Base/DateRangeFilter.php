@@ -35,22 +35,31 @@ class DateRangeFilter implements FilterInterface
 
     public function apply(QueryBuilder $builder): QueryBuilder
     {
+        $expressionBuilder = $builder->expr();
+
         if (!$this->beginValue && !$this->endValue) {
             return $builder;
         }
 
-        $andCondition = $builder->expr()->andX();
+        $expression = [];
         if ($this->beginValue) {
-            $startExpression = $builder->expr()->gte($this->column, $builder->expr()->literal($this->beginValue));
-            $andCondition->add($startExpression);
+            $expression[] = $expressionBuilder->gte(
+                $this->column,
+                $expressionBuilder->literal($this->beginValue)
+            );
         }
 
         if ($this->endValue) {
-            $endExpression = $builder->expr()->lte($this->column, $builder->expr()->literal($this->endValue));
-            $andCondition->add($endExpression);
+            $expression[] = $expressionBuilder->lte(
+                $this->column,
+                $expressionBuilder->literal($this->endValue)
+            );
         }
 
-        $builder->andWhere($andCondition);
+        $builder->andWhere(
+            count($expression) > 1 ? $expressionBuilder->and(...$expression) : array_pop($expression)
+        );
+
         return $builder;
     }
 }

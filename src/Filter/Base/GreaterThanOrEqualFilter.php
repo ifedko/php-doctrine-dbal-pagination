@@ -31,7 +31,8 @@ class GreaterThanOrEqualFilter implements FilterInterface
 
     public function apply(QueryBuilder $builder): QueryBuilder
     {
-        $builder->andWhere($builder->expr()->gte($this->column, $builder->expr()->literal($this->value)));
+        $expressionBuilder = $builder->expr();
+        $builder->andWhere($expressionBuilder->gte($this->column, $expressionBuilder->literal($this->value)));
 
         return $builder;
     }

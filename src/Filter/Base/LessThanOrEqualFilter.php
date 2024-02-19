@@ -31,7 +31,9 @@ class LessThanOrEqualFilter implements FilterInterface
 
     public function apply(QueryBuilder $builder): QueryBuilder
     {
-        $builder->andWhere($builder->expr()->lte($this->column, $builder->expr()->literal($this->value)));
+        $expressionBuilder = $builder->expr();
+
+        $builder->andWhere($expressionBuilder->lte($this->column, $expressionBuilder->literal($this->value)));
 
         return $builder;
     }

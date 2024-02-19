@@ -35,7 +35,10 @@ class EqualFilter implements FilterInterface
 
     public function apply(QueryBuilder $builder): QueryBuilder
     {
-        $builder->andWhere($builder->expr()->eq($this->column, $builder->expr()->literal($this->value, $this->type)));
+        $expressionBuilder = $builder->expr();
+        $builder->andWhere(
+            $expressionBuilder->eq($this->column, $expressionBuilder->literal($this->value, $this->type))
+        );
 
         return $builder;
     }

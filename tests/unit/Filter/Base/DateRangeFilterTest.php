@@ -11,7 +11,7 @@ class DateRangeFilterTest extends QueryBuilderTestCase
     public function testApplyReturnQueryBuilderSuccess(): void
     {
         $dateRangeFilter = new DateRangeFilter('field');
-        $dateRangeFilter->bindValues(['2015-10-01 00:00:00', '2015-10-31 23:59:59']);
+        $dateRangeFilter->bindValues(['begin' => '2015-10-01 00:00:00', 'end' => '2015-10-31 23:59:59']);
         $queryBuilder = $dateRangeFilter->apply(static::$queryBuilder);
 
         $this->assertInstanceOf(QueryBuilder::class, $queryBuilder);
