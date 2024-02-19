@@ -15,7 +15,7 @@ class ListPaginationFactoryTest extends TestCase
 {
     use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
-    public function testCreateByLogIOSListBuilderTypeSuccess()
+    public function testCreateByLogIOSListBuilderTypeSuccess(): void
     {
         $dbConnectionMock = self::createDbConnectionMock();
         $listBuilderClassName = TestListBuilder::class;
@@ -25,7 +25,7 @@ class ListPaginationFactoryTest extends TestCase
         $this->assertInstanceOf(ListPagination::class, $listPagination);
     }
 
-    public function testCreateByLogIOSListBuilderTypeWithLowerCaseInTypeNameSuccess()
+    public function testCreateByLogIOSListBuilderTypeWithLowerCaseInTypeNameSuccess(): void
     {
         $dbConnectionMock = self::createDbConnectionMock();
         $listBuilderClassName = TestListBuilder::class;
@@ -35,7 +35,7 @@ class ListPaginationFactoryTest extends TestCase
         $this->assertInstanceOf(ListPagination::class, $listPagination);
     }
 
-    public function testCreateIfUnknownListBuilderTypeThrowException()
+    public function testCreateIfUnknownListBuilderTypeThrowException(): void
     {
         $dbConnectionMock = self::createDbConnectionMock();
         $listBuilderClassName = 'Ifedko\\DoctrineDbalPagination\\Test\\NonExistingListBuilder';
@@ -46,7 +46,7 @@ class ListPaginationFactoryTest extends TestCase
         ListPaginationFactory::create($dbConnectionMock, $listBuilderClassName);
     }
 
-    public function testSupportsSorting()
+    public function testSupportsSorting(): void
     {
         $builder = new TestListBuilder(self::createDbConnectionMock());
         $builder->configure(['sortBy' => 'name']);
@@ -54,7 +54,7 @@ class ListPaginationFactoryTest extends TestCase
         $this->assertStringContainsString('ORDER BY name ASC', $builder->query()->getSQL());
     }
 
-    public function testHasDefaultSorting()
+    public function testHasDefaultSorting(): void
     {
         $builder = new TestListBuilder(self::createDbConnectionMock());
         $builder->configure([]);
@@ -62,7 +62,7 @@ class ListPaginationFactoryTest extends TestCase
         $this->assertStringContainsString('ORDER BY user.created_at DESC', $builder->query()->getSQL());
     }
 
-    public function testSupportsComplexSorting()
+    public function testSupportsComplexSorting(): void
     {
         $sortingModel = Mockery::mock(SortingInterface::class);
         $sortingModel->shouldReceive('bindValues')->andReturn([]);
@@ -75,7 +75,7 @@ class ListPaginationFactoryTest extends TestCase
         $builder->query();
     }
 
-    public function testProvidesSortingParams()
+    public function testProvidesSortingParams(): void
     {
         $builder = new TestListBuilder(self::createDbConnectionMock());
         $builder->configure([
@@ -90,9 +90,9 @@ class ListPaginationFactoryTest extends TestCase
         );
     }
 
-    private static function createDbConnectionMock()
+    private static function createDbConnectionMock(): Connection
     {
-        $dbConnectionMock =  Mockery::mock(Connection::class);
+        $dbConnectionMock = Mockery::mock(Connection::class);
         $dbConnectionMock->allows('getDatabasePlatform')->andReturn(new PostgreSQLPlatform());
 
         return $dbConnectionMock;

@@ -15,6 +15,5 @@ class GreaterThanOrEqualFilterTest extends QueryBuilderTestCase
                 ->bindValues('2015-09-01')
                 ->apply(static::$queryBuilder)->getSQL()
         );
-
     }
 }

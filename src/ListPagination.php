@@ -28,15 +28,12 @@ class ListPagination
         $queryBuilder->setMaxResults($limit);
         $queryBuilder->setFirstResult($offset);
 
-        $pageItems = $queryBuilder->execute()->fetchAllAssociative();
+        $pageItems = $queryBuilder->fetchAllAssociative();
 
         return [
-            'total' => $this->listQueryBuilder->totalQuery()
-                ->execute()->fetchOne(),
-
+            'total' => $this->listQueryBuilder->totalQuery()->fetchOne(),
             'items' => is_null($this->pageItemsMapCallback) ?
                 $pageItems : array_map($this->pageItemsMapCallback, $pageItems),
-
             'sorting' => $this->listQueryBuilder->sortingParameters()
         ];
     }

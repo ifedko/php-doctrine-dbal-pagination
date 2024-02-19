@@ -9,7 +9,7 @@ class ListPaginationTest extends QueryBuilderTestCase
 {
     use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
-    public function testGetWithCorrectLimitAndOffset()
+    public function testGetWithCorrectLimitAndOffset(): void
     {
         $limit = 2;
         $offset = 0;
@@ -30,7 +30,7 @@ class ListPaginationTest extends QueryBuilderTestCase
         $this->assertEquals($expectedItems, $listPage['items']);
     }
 
-    public function testGetWithNotCorrectLimitAndOffset()
+    public function testGetWithNotCorrectLimitAndOffset(): void
     {
         $limit = null;
         $offset = -3;
@@ -50,7 +50,7 @@ class ListPaginationTest extends QueryBuilderTestCase
         $this->assertEquals($expectedItems, $listPage['items']);
     }
 
-    public function testItIsPossibleToDefineAMapFunctionToApplyToItemsOfAPage()
+    public function testItIsPossibleToDefineAMapFunctionToApplyToItemsOfAPage(): void
     {
         $expectedItems = [
             ['id' => 1, 'name' => '{"some":"json1"}', 'created_at' => null],

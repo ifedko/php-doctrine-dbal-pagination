@@ -13,7 +13,7 @@
     <php>
         <ini name="error_reporting" value="E_ALL" />
         <ini name="display_errors" value="1" />
-        <env name="DOCTRINE_DEPRECATIONS" value="track" force="true" />
+        <env name="DOCTRINE_DEPRECATIONS" value="trigger" force="true" />
     </php>
 
     <testsuites>
