@@ -33,6 +33,6 @@
         "mockery/mockery": "^1.6",
         "phpunit/phpunit": "^9.6",
         "symfony/phpunit-bridge": "^7.0",
-        "symfony/doctrine-bridge": "^v6.4"
+        "symfony/doctrine-bridge": "^5.4 || ^6.4"
     }
 }
