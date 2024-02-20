@@ -23,7 +23,9 @@ class ListPaginationTest extends QueryBuilderTestCase
             static::$connection->insert(self::TABLE_NAME, $item);
         }
 
-        $listPagination = new ListPagination(new TestListBuilder(static::$connection));
+        $listBuilder = new TestListBuilder(static::$connection);
+        $listPagination = new ListPagination($listBuilder);
+
         $listPage = $listPagination->get($limit, $offset);
 
         $this->assertEquals($expectedTotal, $listPage['total']);

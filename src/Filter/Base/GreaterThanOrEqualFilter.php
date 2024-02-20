@@ -26,6 +26,7 @@ class GreaterThanOrEqualFilter implements FilterInterface
     public function bindValues($values): self
     {
         $this->value = $values;
+
         return $this;
     }
 

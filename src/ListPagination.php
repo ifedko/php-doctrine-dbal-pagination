@@ -29,9 +29,13 @@ class ListPagination
         $queryBuilder->setFirstResult($offset);
 
         $pageItems = $queryBuilder->fetchAllAssociative();
+        $result = $this->listQueryBuilder->totalQuery()->executeQuery();
+
+        /** Some platforms ( SQLite for example ) don't return row count on select, so return count of all items */
+        $rowCount = $result->rowCount() > 0 ? $result->rowCount() : count($result->fetchAllAssociative());
 
         return [
-            'total' => $this->listQueryBuilder->totalQuery()->fetchOne(),
+            'total' => $rowCount,
             'items' => is_null($this->pageItemsMapCallback) ?
                 $pageItems : array_map($this->pageItemsMapCallback, $pageItems),
             'sorting' => $this->listQueryBuilder->sortingParameters()

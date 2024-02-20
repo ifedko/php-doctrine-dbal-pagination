@@ -42,9 +42,7 @@ class ListBuilderTest extends TestCase
         $dbConnection = self::createDbConnectionMock();
         $parameters = ['param1' => 'value1', 'sortBy' => 'field1'];
         $queryBuilderMock = Mockery::mock(QueryBuilder::class);
-        $queryBuilderMock
-            ->shouldReceive('resetQueryPart')
-            ->andReturn($queryBuilderMock);
+        $queryBuilderMock->shouldReceive('resetOrderBy')->andReturn($queryBuilderMock);
 
         $queryBuilderMock
             ->shouldReceive('select')
@@ -63,8 +61,9 @@ class ListBuilderTest extends TestCase
     public function testTotalQueryResetSelectPart(): void
     {
         $dbConnection = self::createDbConnectionMock();
+
         $queryBuilderMock = Mockery::mock(QueryBuilder::class);
-        $queryBuilderMock->expects('select')->with('count(*)')->andReturn($queryBuilderMock);
+        $queryBuilderMock->expects('resetOrderBy')->andReturn($queryBuilderMock);
 
         $listBuilderMock = Mockery::mock(ListBuilder::class, [$dbConnection])->makePartial();
         $listBuilderMock->shouldAllowMockingProtectedMethods();

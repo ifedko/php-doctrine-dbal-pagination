@@ -3,7 +3,7 @@
 namespace Ifedko\DoctrineDbalPagination\Test;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Ifedko\DoctrineDbalPagination\Exception\ListPaginationFactoryException;
 use Ifedko\DoctrineDbalPagination\ListPagination;
 use Ifedko\DoctrineDbalPagination\ListPaginationFactory;
@@ -93,7 +93,7 @@ class ListPaginationFactoryTest extends TestCase
     private static function createDbConnectionMock(): Connection
     {
         $dbConnectionMock = Mockery::mock(Connection::class);
-        $dbConnectionMock->allows('getDatabasePlatform')->andReturn(new PostgreSQLPlatform());
+        $dbConnectionMock->allows('getDatabasePlatform')->andReturn(new SqlitePlatform());
 
         return $dbConnectionMock;
     }

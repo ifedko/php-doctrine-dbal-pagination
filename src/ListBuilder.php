@@ -38,16 +38,16 @@ abstract class ListBuilder
     public function query(): QueryBuilder
     {
         $queryBuilder = $this->baseQuery();
-        $queryBuilder = $this->applyFilters($queryBuilder);
-        $queryBuilder = $this->applySortings($queryBuilder);
+        $this->applyFilters($queryBuilder);
+        $this->applySortings($queryBuilder);
 
         return $queryBuilder;
     }
 
     public function totalQuery(): QueryBuilder
     {
-        $queryBuilder = (clone $this->baseQuery())->select('count(*)');
-        $queryBuilder = $this->applyFilters($queryBuilder);
+        $queryBuilder = (clone $this->baseQuery())->resetOrderBy();
+        $this->applyFilters($queryBuilder);
 
         return $queryBuilder;
     }
