@@ -2,65 +2,44 @@
 
 namespace Ifedko\DoctrineDbalPagination\Test\Filter\Base;
 
-use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Ifedko\DoctrineDbalPagination\Filter\Base\LikeFilter;
-use PHPUnit\Framework\TestCase;
+use Ifedko\DoctrineDbalPagination\Test\QueryBuilderTestCase;
 
-class LikeFilterTest extends TestCase
+class LikeFilterTest extends QueryBuilderTestCase
 {
-    public function testApplyWithSingleColumnsReturnQueryBuilderSuccess()
+    public function testApplyWithSingleColumnsReturnQueryBuilderSuccess(): void
     {
-        $queryBuilder = new QueryBuilder(DriverManager::getConnection([
-            'driver' => 'pdo_sqlite',
-            'path' => ':memory:'
-        ]));
-
         $likeFilter = new LikeFilter('field');
         $likeFilter->bindValues('something like');
-        $queryBuilder = $likeFilter->apply($queryBuilder);
-        $this->assertStringContainsString(
-            "field LIKE '%something like%'",
-            $queryBuilder->getSQL()
-        );
+        $queryBuilder = $likeFilter->apply(static::$queryBuilder);
 
-        $this->assertInstanceOf('Doctrine\DBAL\Query\QueryBuilder', $queryBuilder);
+        $this->assertInstanceOf(QueryBuilder::class, $queryBuilder);
+        $this->assertStringContainsString("field LIKE '%something like%'", $queryBuilder->getSQL());
+
     }
 
-    public function testApplyWithArrayOfColumnsReturnQueryBuilderSuccess()
+    public function testApplyWithArrayOfColumnsReturnQueryBuilderSuccess(): void
     {
-        $queryBuilder = new QueryBuilder(DriverManager::getConnection([
-            'driver' => 'pdo_sqlite',
-            'path' => ':memory:'
-        ]));
-
         $likeFilter = new LikeFilter(['field1', 'field2']);
         $likeFilter->bindValues('something like');
-        $queryBuilder = $likeFilter->apply($queryBuilder);
+        $queryBuilder = $likeFilter->apply(static::$queryBuilder);
+
+        $this->assertInstanceOf(QueryBuilder::class, $queryBuilder);
         $this->assertStringContainsString(
             "(field1 LIKE '%something like%') OR (field2 LIKE '%something like%')",
             $queryBuilder->getSQL()
         );
-
-        $this->assertInstanceOf('Doctrine\DBAL\Query\QueryBuilder', $queryBuilder);
     }
 
-    public function testAcceptsOperatorOption()
+    public function testAcceptsOperatorOption(): void
     {
-        $queryBuilder = new QueryBuilder(DriverManager::getConnection([
-            'driver' => 'pdo_sqlite',
-            'path' => ':memory:'
-        ]));
-
         $likeFilter = new LikeFilter('field', ['operator' => 'ILIKE']);
         $likeFilter->bindValues('something like');
-        $queryBuilder = $likeFilter->apply($queryBuilder);
-        $this->assertStringContainsString(
-            "field ILIKE '%something like%'",
-            $queryBuilder->getSQL()
-        );
+        $queryBuilder = $likeFilter->apply(static::$queryBuilder);
+        $this->assertInstanceOf(QueryBuilder::class, $queryBuilder);
 
-        $this->assertInstanceOf('Doctrine\DBAL\Query\QueryBuilder', $queryBuilder);
+        $this->assertStringContainsString("field ILIKE '%something like%'", $queryBuilder->getSQL());
     }
 
 }

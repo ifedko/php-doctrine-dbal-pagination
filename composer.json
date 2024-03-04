@@ -24,11 +24,15 @@
         }
     },
     "require": {
-        "php": ">=7.3",
-        "doctrine/dbal": "^2.11|^3.0"
+        "ext-pdo": "*",
+        "php": "^7.4 || ^8.0",
+        "doctrine/dbal": "^3.8"
     },
     "require-dev": {
-        "mockery/mockery": "^1.0",
-        "phpunit/phpunit": "^9.0"
+        "ext-json": "*",
+        "mockery/mockery": "^1.6",
+        "phpunit/phpunit": "^9.6",
+        "symfony/phpunit-bridge": "^7.0",
+        "symfony/doctrine-bridge": "^5.4 || ^6.4"
     }
 }

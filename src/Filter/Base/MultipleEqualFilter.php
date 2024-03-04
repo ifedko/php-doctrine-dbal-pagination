@@ -8,46 +8,37 @@ use Ifedko\DoctrineDbalPagination\Filter\FilterInterface;
 
 class MultipleEqualFilter implements FilterInterface
 {
-    /**
-     * @var string
-     */
-    private $column;
+    private string $column;
 
-    /**
-     * @var array
-     */
-    private $values;
+    private array $values;
 
-    private $type;
+    private int $type;
 
-    /**
-     * @param string $column
-     */
-    public function __construct($column, $type = Connection::PARAM_STR_ARRAY)
+    public function __construct(string $column, $type = Connection::PARAM_STR_ARRAY)
     {
         $this->column = $column;
         $this->type = $type;
     }
 
     /**
-     * {@inheritDoc}
+     * @param array $values
+     * @return $this
      */
-    public function bindValues($values)
+    public function bindValues($values): self
     {
         if (!is_array($values)) {
             $values = [$values];
         }
 
         $this->values = $values;
+
+        return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function apply(QueryBuilder $builder)
+    public function apply(QueryBuilder $builder): QueryBuilder
     {
-        $builder
-            ->andWhere($this->column . " IN (" . $builder->createNamedParameter($this->values, $this->type) . ")");
+        $builder->andWhere($this->column . " IN (" . $builder->createNamedParameter($this->values, $this->type) . ")");
+
         return $builder;
     }
 }

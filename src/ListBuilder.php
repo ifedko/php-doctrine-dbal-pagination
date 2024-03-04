@@ -8,25 +8,13 @@ use Ifedko\DoctrineDbalPagination\Filter\FilterInterface;
 
 abstract class ListBuilder
 {
-    /**
-     * @var Connection
-     */
-    protected $dbConnection;
+    protected Connection $dbConnection;
 
-    /**
-     * @var array
-     */
-    protected $filters;
+    protected ?array $filters;
 
-    /**
-     * @var array
-     */
-    protected $sortings;
+    protected ?array $sortings;
 
-    /**
-     * @var array
-     */
-    protected $sortingParameters = [];
+    protected array $sortingParameters = [];
 
     /**
      * @param Connection $dbConnection
@@ -38,10 +26,7 @@ abstract class ListBuilder
         $this->sortings = [];
     }
 
-    /**
-     * @param array $parameters
-     */
-    public function configure($parameters)
+    public function configure(array $parameters): void
     {
         $this->filters = [];
         $this->configureFilters($parameters);
@@ -50,74 +35,46 @@ abstract class ListBuilder
         $this->configureSorting($parameters);
     }
 
-    /**
-     * @return QueryBuilder
-     */
-    public function query()
+    public function query(): QueryBuilder
     {
         $queryBuilder = $this->baseQuery();
-        $queryBuilder = $this->applyFilters($queryBuilder);
-        $queryBuilder = $this->applySortings($queryBuilder);
+        $this->applyFilters($queryBuilder);
+        $this->applySortings($queryBuilder);
+
         return $queryBuilder;
     }
 
-    /**
-     * @return QueryBuilder
-     */
-    public function totalQuery()
+    public function totalQuery(): QueryBuilder
     {
-        $queryBuilder = (clone $this->baseQuery())
-            ->resetQueryPart('select')
-            ->select('1');
+        $queryBuilder = (clone $this->baseQuery())->resetOrderBy();
+        $this->applyFilters($queryBuilder);
 
-        $queryBuilder = $this->applyFilters($queryBuilder);
         return $queryBuilder;
     }
 
-    /**
-     * @return array of sorting parameter that were applied to the list
-     */
-    public function sortingParameters()
+    public function sortingParameters(): array
     {
         return $this->sortingParameters;
     }
 
-    /**
-     * @return QueryBuilder
-     */
-    abstract protected function baseQuery();
+    abstract protected function baseQuery(): QueryBuilder;
 
-    /**
-     * @param array $parameters
-     * @return $this
-     */
-    protected function configureFilters($parameters)
+    protected function configureFilters(array $parameters): self
     {
         return $this;
     }
 
-    /**
-     * @param array $parameters
-     * @return $this
-     */
-    protected function configureSorting($parameters)
+    protected function configureSorting(array $parameters):self
     {
         return $this;
     }
 
-    /**
-     * @return QueryBuilder
-     */
-    protected function getQueryBuilder()
+    protected function getQueryBuilder(): QueryBuilder
     {
         return new QueryBuilder($this->dbConnection);
     }
 
-    /**
-     * @param $sorting SortingInterface
-     * @param array $parameters
-     */
-    protected function sortUsing(SortingInterface $sorting, array $parameters)
+    protected function sortUsing(SortingInterface $sorting, array $parameters): void
     {
         $this->sortingParameters = array_merge(
             $sorting->bindValues($parameters),
@@ -126,11 +83,7 @@ abstract class ListBuilder
         $this->sortings[] = $sorting;
     }
 
-    /**
-     * @param QueryBuilder $queryBuilder
-     * @return QueryBuilder
-     */
-    private function applyFilters(QueryBuilder $queryBuilder)
+    private function applyFilters(QueryBuilder $queryBuilder): QueryBuilder
     {
         /* @var $filter FilterInterface */
         foreach ($this->filters as $filter) {
@@ -140,11 +93,7 @@ abstract class ListBuilder
         return $queryBuilder;
     }
 
-    /**
-     * @param QueryBuilder $queryBuilder
-     * @return QueryBuilder
-     */
-    private function applySortings(QueryBuilder $queryBuilder)
+    private function applySortings(QueryBuilder $queryBuilder): QueryBuilder
     {
         foreach ($this->sortings as $sorting) {
             $sorting->apply($queryBuilder);

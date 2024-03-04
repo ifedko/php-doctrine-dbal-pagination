@@ -7,43 +7,28 @@ use Ifedko\DoctrineDbalPagination\Filter\FilterInterface;
 
 class MultipleLikeFilter implements FilterInterface
 {
-    /**
-     * @var array
-     */
-    private $columns;
+    private array $columns;
 
-    /**
-     * @var array
-     */
-    private $options;
+    private array $options;
 
-    /**
-     * @var array of string
-     */
-    private $includeValues = [];
+    private array $includeValues = [];
 
-    /**
-     * @var array of string
-     */
-    private $excludeValues = [];
+    private array $excludeValues = [];
 
     /**
      * @param string|array $columns
      * @param array $options
      */
-    public function __construct($columns, $options=[])
+    public function __construct($columns, array $options = [])
     {
         $this->columns = (!is_array($columns)) ? [$columns] : $columns;
         $this->options = array_merge(['operator' => 'LIKE', 'matchFromStart' => []], $options);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function bindValues($values)
+    public function bindValues($values): self
     {
         $values = explode(' ', $values);
-        $values = array_filter($values, static function($value){
+        $values = array_filter($values, static function ($value) {
             return $value !== null && $value !== false && $value !== '';
         });
 
@@ -58,44 +43,43 @@ class MultipleLikeFilter implements FilterInterface
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function apply(QueryBuilder $builder)
+    public function apply(QueryBuilder $builder): QueryBuilder
     {
+        $expressionBuilder = $builder->expr();
+
         $andConditions = [];
         foreach ($this->includeValues as $value) {
             $orConditions = [];
             foreach ($this->columns as $column) {
-                $orConditions[] = $builder->expr()->comparison(
+                $orConditions[] = $expressionBuilder->comparison(
                     $column,
                     $this->options['operator'],
-                    $builder->expr()->literal($this->leftWildcardOperator($column) . $value . '%', \PDO::PARAM_STR)
+                    $expressionBuilder->literal($this->leftWildcardOperator($column) . $value . '%', \PDO::PARAM_STR)
                 );
             }
-            $andConditions[] = $builder->expr()->orX()->addMultiple($orConditions);
+            $andConditions[] = $expressionBuilder->or(...$orConditions);
         }
 
         foreach ($this->excludeValues as $value) {
             foreach ($this->columns as $column) {
-                $andCondition = $builder->expr()->comparison(
+                $andCondition = $expressionBuilder->comparison(
                     'COALESCE(' . $column . ", '')",
                     'NOT ' . $this->options['operator'],
-                    $builder->expr()->literal($this->leftWildcardOperator($column) . $value . '%', \PDO::PARAM_STR)
+                    $expressionBuilder->literal($this->leftWildcardOperator($column) . $value . '%', \PDO::PARAM_STR)
                 );
                 $andConditions[] = $andCondition;
             }
         }
 
-        $builder->andWhere($builder->expr()->andX()->addMultiple($andConditions));
+        $builder->andWhere($expressionBuilder->and(...$andConditions));
 
         return $builder;
     }
 
-    private function leftWildcardOperator($column)
+    private function leftWildcardOperator($column): string
     {
         return isset($this->options['matchFromStart'])
-            && is_array($this->options['matchFromStart'])
-            && in_array($column, $this->options['matchFromStart']) ? '' : '%';
+        && is_array($this->options['matchFromStart'])
+        && in_array($column, $this->options['matchFromStart']) ? '' : '%';
     }
 }

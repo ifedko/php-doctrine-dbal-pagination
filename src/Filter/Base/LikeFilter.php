@@ -7,55 +7,46 @@ use Ifedko\DoctrineDbalPagination\Filter\FilterInterface;
 
 class LikeFilter implements FilterInterface
 {
-    /**
-     * @var array
-     */
-    private $columns;
+    private array $columns;
 
-    /**
-     * @var array
-     */
-    private $options;
+    private array $options;
 
-    /**
-     * @var string
-     */
-    private $value;
+    private string $value;
 
     /**
      * @param string|array $columns
-     * @param array $options
+     * @param ?array $options
      */
-    public function __construct($columns, $options=[])
+    public function __construct($columns, ?array $options = [])
     {
         $this->columns = (!is_array($columns)) ? [$columns] : $columns;
         $this->options = array_merge(['operator' => 'LIKE'], $options);
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $values
+     * @return $this
      */
-    public function bindValues($values)
+    public function bindValues($values): self
     {
         $this->value = $values;
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function apply(QueryBuilder $builder)
+    public function apply(QueryBuilder $builder): QueryBuilder
     {
+        $expressionBuilder = $builder->expr();
+
         $orConditions = [];
         foreach ($this->columns as $column) {
-            $orCondition = $builder->expr()->comparison(
+            $orCondition = $expressionBuilder->comparison(
                 $column,
                 $this->options['operator'],
-                $builder->expr()->literal('%' . $this->value . '%', \PDO::PARAM_STR)
+                $expressionBuilder->literal('%' . $this->value . '%', \PDO::PARAM_STR)
             );
             $orConditions[] = $orCondition;
         }
-        $builder->andWhere($builder->expr()->orX()->addMultiple($orConditions));
+        $builder->andWhere($expressionBuilder->or(...$orConditions));
 
         return $builder;
     }
