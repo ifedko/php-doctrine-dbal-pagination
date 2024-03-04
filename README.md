@@ -1,7 +1,5 @@
 # PHP DOCTRINE DBAL pagination
 
-![](https://travis-ci.org/ifedko/php-doctrine-dbal-pagination.svg?branch=master)
-
 ## The goal
 
 Everyone faces the task when it's required to get list of items by customizable filters,
