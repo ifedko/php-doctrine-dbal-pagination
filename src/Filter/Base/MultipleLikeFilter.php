@@ -22,7 +22,7 @@ class MultipleLikeFilter implements FilterInterface
     public function __construct($columns, array $options = [])
     {
         $this->columns = (!is_array($columns)) ? [$columns] : $columns;
-        $this->options = array_merge(['operator' => 'LIKE', 'matchFromStart' => []], $options);
+        $this->options = array_merge(['operator' => 'LIKE', 'matchFromStart' => [], 'fullMatch' => []], $options);
     }
 
     public function bindValues($values): self
@@ -51,11 +51,19 @@ class MultipleLikeFilter implements FilterInterface
         foreach ($this->includeValues as $value) {
             $orConditions = [];
             foreach ($this->columns as $column) {
-                $orConditions[] = $expressionBuilder->comparison(
-                    $column,
-                    $this->options['operator'],
-                    $expressionBuilder->literal($this->leftWildcardOperator($column) . $value . '%', \PDO::PARAM_STR)
-                );
+                if (in_array($column, $this->options['fullMatch'])) {
+                    $orConditions[] = $expressionBuilder->comparison(
+                        $column,
+                        $this->options['operator'],
+                        $expressionBuilder->literal($value, \PDO::PARAM_STR)
+                    );
+                } else {
+                    $orConditions[] = $expressionBuilder->comparison(
+                        $column,
+                        $this->options['operator'],
+                        $expressionBuilder->literal($this->leftWildcardOperator($column) . $value . '%', \PDO::PARAM_STR)
+                    );
+                }
             }
             $andConditions[] = $expressionBuilder->or(...$orConditions);
         }
