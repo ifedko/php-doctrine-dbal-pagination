@@ -70,6 +70,18 @@ class MultipleLikeFilterTest extends QueryBuilderTestCase
         $this->assertStringContainsString("(email ILIKE '%something%')", $queryBuilder->getSQL());
     }
 
+    public function testAcceptsFullMatchOption(): void
+    {
+        $likeFilter = new MultipleLikeFilter(
+            ['id'],
+            ['operator' => 'ILIKE', 'fullMatch' => ['id']]
+        );
+        $likeFilter->bindValues('12');
+        $queryBuilder = $likeFilter->apply(static::$queryBuilder);
+
+        $this->assertStringContainsString("id ILIKE '12'", $queryBuilder->getSQL());
+    }
+
     public function testSupportsSearchByZeroSymbol(): void
     {
         $likeFilter = new MultipleLikeFilter(
